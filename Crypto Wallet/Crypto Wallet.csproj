@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net7.0</TargetFramework>
+    <RootNamespace>Crypto_Wallet</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Classes\" />
+    <None Remove="Classes\Wallet\" />
+    <None Remove="Classes\Wallets\" />
+    <None Remove="Classes\Assets\" />
+    <None Remove="Classes\Transactions\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Classes\" />
+    <Folder Include="Classes\Wallets\" />
+    <Folder Include="Classes\Wallets\" />
+    <Folder Include="Classes\Assets\" />
+    <Folder Include="Classes\Transactions\" />
+  </ItemGroup>
+</Project>
