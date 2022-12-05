@@ -16,6 +16,14 @@ namespace Crypto_Wallet.Classes
 			Address = Guid.NewGuid();
 			OwnedFungibleAssets = ownedFungibleAssets;
 		}
+
+		public CryptoWallet()
+		{
+			Address = Guid.NewGuid();
+			OwnedFungibleAssets = new Dictionary<Guid, double>();
+			foreach (var sfa in SupportedFungibleAssets)
+				OwnedFungibleAssets.Add(sfa, 0);
+		}
 	}
 }
 

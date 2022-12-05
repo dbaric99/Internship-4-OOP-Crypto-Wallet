@@ -1,5 +1,6 @@
 ﻿using Crypto_Wallet.Classes;
 using Crypto_Wallet.Classes.Assets;
+using Crypto_Wallet.Enums;
 
 #region Constants
 
@@ -22,9 +23,9 @@ const string ACCESS_WALLET_MENU_TEXT =
 
 #endregion
 
-#region ProgramProperties
+#region GlobalProgramProperties
 
-var fungibleAssets = new List<FungibleAsset>()
+var g_fungibleAssets = new List<FungibleAsset>()
 {
     new FungibleAsset("Bitcoin", "BTC", 17108.30),
     new FungibleAsset("Ethereum", "ETH", 1277.60),
@@ -38,181 +39,181 @@ var fungibleAssets = new List<FungibleAsset>()
     new FungibleAsset("Binance", "BNB", 2089.05)
 };
 
-var nonFungibleAssets = new List<NonFungibleAsset>()
+var g_nonFungibleAssets = new List<NonFungibleAsset>()
 {
-    new NonFungibleAsset("Mutant Ape Yacht Club #23140", 14.89, fungibleAssets[1].Address), 
-    new NonFungibleAsset("Bored Ape Yacht Club #3758", 74.5, fungibleAssets[1].Address), 
-    new NonFungibleAsset("Otherdeed for Otherside#46782", 1.38, fungibleAssets[1].Address), 
-    new NonFungibleAsset("Moonbirds #1446", 8.88, fungibleAssets[1].Address),
-    new NonFungibleAsset("TUDSY #3793", 148.99, fungibleAssets[9].Address),
-    new NonFungibleAsset("METASHARK #15", 69, fungibleAssets[9].Address),
-    new NonFungibleAsset("Bold Badger #780", 7.38, fungibleAssets[2].Address),
-    new NonFungibleAsset("ROGUE SHARKS #2064", 18.45, fungibleAssets[2].Address),
-    new NonFungibleAsset("Bad Billy Goats #6345", 1, fungibleAssets[3].Address),
-    new NonFungibleAsset("Agent SHIB", 16, fungibleAssets[3].Address),
-    new NonFungibleAsset("Smokestack", 12.32, fungibleAssets[1].Address),
-    new NonFungibleAsset("Flowers #1991", 10.45, fungibleAssets[1].Address),
-    new NonFungibleAsset("Potatoz #3691", 1.73, fungibleAssets[1].Address),
-    new NonFungibleAsset("Pudgy Penguin #6454", 3.25, fungibleAssets[1].Address),
-    new NonFungibleAsset("RENGA #4197", 1.1557, fungibleAssets[1].Address),
-    new NonFungibleAsset("Invisible Friends #2494", 2.19, fungibleAssets[1].Address),
-    new NonFungibleAsset("Invisible Friends #3527", 2.35, fungibleAssets[1].Address),
-    new NonFungibleAsset("WoW #1736", 2.1, fungibleAssets[2].Address),
-    new NonFungibleAsset("Quirkies Originals #4240", 1.98, fungibleAssets[2].Address),
-    new NonFungibleAsset("Meebit #13439", 2.91, fungibleAssets[1].Address)
+    new NonFungibleAsset("Mutant Ape Yacht Club #23140", 14.89, g_fungibleAssets[1].Address), 
+    new NonFungibleAsset("Bored Ape Yacht Club #3758", 74.5, g_fungibleAssets[1].Address), 
+    new NonFungibleAsset("Otherdeed for Otherside#46782", 1.38, g_fungibleAssets[1].Address), 
+    new NonFungibleAsset("Moonbirds #1446", 8.88, g_fungibleAssets[1].Address),
+    new NonFungibleAsset("TUDSY #3793", 148.99, g_fungibleAssets[9].Address),
+    new NonFungibleAsset("METASHARK #15", 69, g_fungibleAssets[9].Address),
+    new NonFungibleAsset("Bold Badger #780", 7.38, g_fungibleAssets[2].Address),
+    new NonFungibleAsset("ROGUE SHARKS #2064", 18.45, g_fungibleAssets[2].Address),
+    new NonFungibleAsset("Bad Billy Goats #6345", 1, g_fungibleAssets[3].Address),
+    new NonFungibleAsset("Agent SHIB", 16, g_fungibleAssets[3].Address),
+    new NonFungibleAsset("Smokestack", 12.32, g_fungibleAssets[1].Address),
+    new NonFungibleAsset("Flowers #1991", 10.45, g_fungibleAssets[1].Address),
+    new NonFungibleAsset("Potatoz #3691", 1.73, g_fungibleAssets[1].Address),
+    new NonFungibleAsset("Pudgy Penguin #6454", 3.25, g_fungibleAssets[1].Address),
+    new NonFungibleAsset("RENGA #4197", 1.1557, g_fungibleAssets[1].Address),
+    new NonFungibleAsset("Invisible Friends #2494", 2.19, g_fungibleAssets[1].Address),
+    new NonFungibleAsset("Invisible Friends #3527", 2.35, g_fungibleAssets[1].Address),
+    new NonFungibleAsset("WoW #1736", 2.1, g_fungibleAssets[2].Address),
+    new NonFungibleAsset("Quirkies Originals #4240", 1.98, g_fungibleAssets[2].Address),
+    new NonFungibleAsset("Meebit #13439", 2.91, g_fungibleAssets[1].Address)
 };
 
 BitcoinWallet.SupportedFungibleAssets = new List<Guid>(2)
 {
-    fungibleAssets[0].Address,
-    fungibleAssets[6].Address
+    g_fungibleAssets[0].Address,
+    g_fungibleAssets[6].Address
 };
 
 EthereumWallet.SupportedFungibleAssets = new List<Guid>(6)
 {
-    fungibleAssets[1].Address,
-    fungibleAssets[3].Address,
-    fungibleAssets[4].Address,
-    fungibleAssets[5].Address,
-    fungibleAssets[6].Address,
-    fungibleAssets[9].Address
+    g_fungibleAssets[1].Address,
+    g_fungibleAssets[3].Address,
+    g_fungibleAssets[4].Address,
+    g_fungibleAssets[5].Address,
+    g_fungibleAssets[6].Address,
+    g_fungibleAssets[9].Address
 };
 
 EthereumWallet.SupportedNonFungibleAssets = new List<Guid>(14)
 {
-    nonFungibleAssets[0].Address,
-    nonFungibleAssets[1].Address,
-    nonFungibleAssets[2].Address,
-    nonFungibleAssets[3].Address,
-    nonFungibleAssets[4].Address,
-    nonFungibleAssets[5].Address,
-    nonFungibleAssets[10].Address,
-    nonFungibleAssets[11].Address,
-    nonFungibleAssets[12].Address,
-    nonFungibleAssets[13].Address,
-    nonFungibleAssets[14].Address,
-    nonFungibleAssets[15].Address,
-    nonFungibleAssets[16].Address,
-    nonFungibleAssets[19].Address
+    g_nonFungibleAssets[0].Address,
+    g_nonFungibleAssets[1].Address,
+    g_nonFungibleAssets[2].Address,
+    g_nonFungibleAssets[3].Address,
+    g_nonFungibleAssets[4].Address,
+    g_nonFungibleAssets[5].Address,
+    g_nonFungibleAssets[10].Address,
+    g_nonFungibleAssets[11].Address,
+    g_nonFungibleAssets[12].Address,
+    g_nonFungibleAssets[13].Address,
+    g_nonFungibleAssets[14].Address,
+    g_nonFungibleAssets[15].Address,
+    g_nonFungibleAssets[16].Address,
+    g_nonFungibleAssets[19].Address
 };
 
 SolanaWallet.SupportedFungibleAssets = new List<Guid>(4)
 {
-    fungibleAssets[2].Address,
-    fungibleAssets[3].Address,
-    fungibleAssets[7].Address,
-    fungibleAssets[8].Address
+    g_fungibleAssets[2].Address,
+    g_fungibleAssets[3].Address,
+    g_fungibleAssets[7].Address,
+    g_fungibleAssets[8].Address
 };
 
 SolanaWallet.SupportedNonFungibleAssets = new List<Guid>(6)
 {
-    nonFungibleAssets[6].Address,
-    nonFungibleAssets[7].Address,
-    nonFungibleAssets[8].Address,
-    nonFungibleAssets[9].Address,
-    nonFungibleAssets[17].Address,
-    nonFungibleAssets[18].Address
+    g_nonFungibleAssets[6].Address,
+    g_nonFungibleAssets[7].Address,
+    g_nonFungibleAssets[8].Address,
+    g_nonFungibleAssets[9].Address,
+    g_nonFungibleAssets[17].Address,
+    g_nonFungibleAssets[18].Address
 };
 
-var wallets = new List<CryptoWallet>()
+var g_wallets = new List<CryptoWallet>()
 {
     new BitcoinWallet(new Dictionary<Guid, double>(2)
     {
-        { fungibleAssets[0].Address, 2.1 },
-        { fungibleAssets[6].Address, 12.3 }
+        { g_fungibleAssets[0].Address, 2.1 },
+        { g_fungibleAssets[6].Address, 12.3 }
     }),
 
     new BitcoinWallet(new Dictionary<Guid, double>(2)
     {
-        { fungibleAssets[0].Address, 0 },
-        { fungibleAssets[6].Address, 2.3 }
+        { g_fungibleAssets[0].Address, 0 },
+        { g_fungibleAssets[6].Address, 2.3 }
     }),
 
     new BitcoinWallet(new Dictionary<Guid, double>(2)
     {
-        { fungibleAssets[0].Address, 5.6 },
-        { fungibleAssets[6].Address, 1.3 }
+        { g_fungibleAssets[0].Address, 5.6 },
+        { g_fungibleAssets[6].Address, 1.3 }
     }),
 
     new EthereumWallet(new Dictionary<Guid, double>(6)
     {
-        { fungibleAssets[1].Address, 1.25 },
-        { fungibleAssets[3].Address, 10 },
-        { fungibleAssets[4].Address, 12 },
-        { fungibleAssets[5].Address, 3.5 },
-        { fungibleAssets[6].Address, 8 },
-        { fungibleAssets[9].Address, 9.2 }
+        { g_fungibleAssets[1].Address, 1.25 },
+        { g_fungibleAssets[3].Address, 10 },
+        { g_fungibleAssets[4].Address, 12 },
+        { g_fungibleAssets[5].Address, 3.5 },
+        { g_fungibleAssets[6].Address, 8 },
+        { g_fungibleAssets[9].Address, 9.2 }
     }, new List<Guid>(4){
-        nonFungibleAssets[0].Address,
-        nonFungibleAssets[10].Address,
-        nonFungibleAssets[14].Address,
-        nonFungibleAssets[11].Address
+        g_nonFungibleAssets[0].Address,
+        g_nonFungibleAssets[10].Address,
+        g_nonFungibleAssets[14].Address,
+        g_nonFungibleAssets[11].Address
     }),
 
     new EthereumWallet(new Dictionary<Guid, double>(6)
     {
-        { fungibleAssets[1].Address, 0.3 },
-        { fungibleAssets[3].Address, 2 },
-        { fungibleAssets[4].Address, 0 },
-        { fungibleAssets[5].Address, 0 },
-        { fungibleAssets[6].Address, 0 },
-        { fungibleAssets[9].Address, 17 }
+        { g_fungibleAssets[1].Address, 0.3 },
+        { g_fungibleAssets[3].Address, 2 },
+        { g_fungibleAssets[4].Address, 0 },
+        { g_fungibleAssets[5].Address, 0 },
+        { g_fungibleAssets[6].Address, 0 },
+        { g_fungibleAssets[9].Address, 17 }
     }, new List<Guid>(2){
-        nonFungibleAssets[19].Address,
-        nonFungibleAssets[2].Address
+        g_nonFungibleAssets[19].Address,
+        g_nonFungibleAssets[2].Address
     }),
 
     new EthereumWallet(new Dictionary<Guid, double>(6)
     {
-        { fungibleAssets[1].Address, 52.89 },
-        { fungibleAssets[3].Address, 26 },
-        { fungibleAssets[4].Address, 37.5 },
-        { fungibleAssets[5].Address, 42.3 },
-        { fungibleAssets[6].Address, 12.8 },
-        { fungibleAssets[9].Address, 4 }
+        { g_fungibleAssets[1].Address, 52.89 },
+        { g_fungibleAssets[3].Address, 26 },
+        { g_fungibleAssets[4].Address, 37.5 },
+        { g_fungibleAssets[5].Address, 42.3 },
+        { g_fungibleAssets[6].Address, 12.8 },
+        { g_fungibleAssets[9].Address, 4 }
     }, new List<Guid>(6){
-        nonFungibleAssets[15].Address,
-        nonFungibleAssets[1].Address,
-        nonFungibleAssets[3].Address,
-        nonFungibleAssets[16].Address,
-        nonFungibleAssets[13].Address,
-        nonFungibleAssets[5].Address
+        g_nonFungibleAssets[15].Address,
+        g_nonFungibleAssets[1].Address,
+        g_nonFungibleAssets[3].Address,
+        g_nonFungibleAssets[16].Address,
+        g_nonFungibleAssets[13].Address,
+        g_nonFungibleAssets[5].Address
     }),
 
     new SolanaWallet(new Dictionary<Guid, double>(4)
     {
-        { fungibleAssets[2].Address, 14.5 },
-        { fungibleAssets[3].Address, 8 },
-        { fungibleAssets[7].Address, 25 },
-        { fungibleAssets[8].Address, 34.7 }
+        { g_fungibleAssets[2].Address, 14.5 },
+        { g_fungibleAssets[3].Address, 8 },
+        { g_fungibleAssets[7].Address, 25 },
+        { g_fungibleAssets[8].Address, 34.7 }
     }, new List<Guid>(1)
     {
-        nonFungibleAssets[18].Address
+        g_nonFungibleAssets[18].Address
     }),
 
     new SolanaWallet(new Dictionary<Guid, double>(4)
     {
-        { fungibleAssets[2].Address, 0 },
-        { fungibleAssets[3].Address, 0 },
-        { fungibleAssets[7].Address, 0 },
-        { fungibleAssets[8].Address, 0 }
+        { g_fungibleAssets[2].Address, 0 },
+        { g_fungibleAssets[3].Address, 0 },
+        { g_fungibleAssets[7].Address, 0 },
+        { g_fungibleAssets[8].Address, 0 }
     }, new List<Guid>(3)
     {
-        nonFungibleAssets[6].Address,
-        nonFungibleAssets[9].Address,
-        nonFungibleAssets[17].Address
+        g_nonFungibleAssets[6].Address,
+        g_nonFungibleAssets[9].Address,
+        g_nonFungibleAssets[17].Address
     }),
 
     new SolanaWallet(new Dictionary<Guid, double>(4)
     {
-        { fungibleAssets[2].Address, 0 },
-        { fungibleAssets[3].Address, 0 },
-        { fungibleAssets[7].Address, 0 },
-        { fungibleAssets[8].Address, 0 }
+        { g_fungibleAssets[2].Address, 0 },
+        { g_fungibleAssets[3].Address, 0 },
+        { g_fungibleAssets[7].Address, 0 },
+        { g_fungibleAssets[8].Address, 0 }
     }, new List<Guid>(2)
     {
-        nonFungibleAssets[7].Address,
-        nonFungibleAssets[8].Address
+        g_nonFungibleAssets[7].Address,
+        g_nonFungibleAssets[8].Address
     })
 };
 
@@ -243,10 +244,27 @@ do
 
 void CreateNewCryptoWallet()
 {
+    Console.Clear();
 
+    PrintGeneralSectionSeparator("Create Wallet");
+    Console.Write("Available wallets to create: Bitcoin, Ethereum or Solana\n"
+        + "Enter the type of wallet you want to create: ");
+
+    var wantedWallet = CapitalizeAndTrim(Console.ReadLine()) + "Wallet";
+
+    if(!Enum.IsDefined(typeof(CryptoWalletTypes), wantedWallet))
+    {
+        Console.WriteLine("\nWrong input for wallet type! Wallet can be of types:  Bitcoin, Ethereum or Solana");
+        return;
+    }
+
+    Type walletType = Type.GetType($"Crypto_Wallet.Classes.{wantedWallet}");
+
+    if (ConfirmChoice($"Are you sure you want to add new wallet of type {wantedWallet}?"))
+        g_wallets.Add(Activator.CreateInstance(walletType) as CryptoWallet);
 }
 
-//------ GENERAL USE FUNCTIONS ------
+//------ HELPER FUNCTIONS ------
 int GetMenuChoiceFromUser(string menuText, string menuTitle)
 {
     var success = false;
@@ -254,7 +272,7 @@ int GetMenuChoiceFromUser(string menuText, string menuTitle)
 
     do
     {
-        Console.WriteLine($"\n<<<---------- {menuTitle} ---------->>>");
+        PrintGeneralSectionSeparator(menuTitle);
 
         Console.WriteLine(menuText);
         Console.Write("Input your choice: ");
@@ -275,6 +293,17 @@ bool ConfirmChoice(string message = "Are you sure?")
 {
     Console.Write($"\n{message} (y/n): ");
     return Console.ReadLine().Trim().ToLower() == "y";
+}
+
+void PrintGeneralSectionSeparator(string text)
+{
+    Console.WriteLine($"\n<<<---------- {text} ---------->>>\n");
+}
+
+string CapitalizeAndTrim(string input)
+{
+    input = input.Trim().ToLower();
+    return input.First().ToString().ToUpper() + String.Join("", input.Skip(1));
 }
 
 Console.ReadKey();

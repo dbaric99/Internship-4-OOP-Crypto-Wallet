@@ -7,6 +7,11 @@ namespace Crypto_Wallet.Classes
 		{
 			
 		}
+
+		public BitcoinWallet() : base()
+		{
+
+		}
 	}
 }
 

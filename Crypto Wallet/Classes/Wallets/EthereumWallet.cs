@@ -11,6 +11,13 @@ namespace Crypto_Wallet.Classes
 		{
 			OwnedNonFungibleAssets = ownedNonFungibleAssets;
 		}
+
+		public EthereumWallet() : base()
+		{
+            OwnedNonFungibleAssets = new List<Guid>();
+            foreach (var snfa in SupportedNonFungibleAssets)
+                OwnedNonFungibleAssets.Add(snfa);
+        }
 	}
 }
 
