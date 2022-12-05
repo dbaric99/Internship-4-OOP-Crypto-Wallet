@@ -6,23 +6,23 @@ using Crypto_Wallet.Classes.Assets;
 const string MAIN_MENU_TEXT =
     "1 - Create a wallet\n"
     + "2 - Access a wallet\n"
-    + "3 - Exit Application\n\n";
+    + "0 - Exit Application\n";
 
 const string CREATE_WALLET_MENU_TEXT =
     "1 - Create a Bitcoin wallet\n"
     + "2 - Create an Ethereum wallet\n"
     + "3 - Create a Solana wallet\n"
-    + "0 - Return to main menu\n\n";
+    + "0 - Return to main menu\n";
 
 const string ACCESS_WALLET_MENU_TEXT =
     "1 - Portfolio\n"
     + "2 - Transfer assets\n"
     + "3 - Transaction history\n"
-    + "0 - Return to main menu\n\n";
+    + "0 - Return to main menu\n";
 
 #endregion
 
-#region InitialValues
+#region ProgramProperties
 
 var fungibleAssets = new List<FungibleAsset>()
 {
@@ -181,10 +181,10 @@ var wallets = new List<CryptoWallet>()
 
     new SolanaWallet(new Dictionary<Guid, double>(4)
     {
-        { fungibleAssets[2].Address, 0 },
-        { fungibleAssets[3].Address, 0 },
-        { fungibleAssets[7].Address, 0 },
-        { fungibleAssets[8].Address, 0 }
+        { fungibleAssets[2].Address, 14.5 },
+        { fungibleAssets[3].Address, 8 },
+        { fungibleAssets[7].Address, 25 },
+        { fungibleAssets[8].Address, 34.7 }
     }, new List<Guid>(1)
     {
         nonFungibleAssets[18].Address
@@ -218,5 +218,63 @@ var wallets = new List<CryptoWallet>()
 
 #endregion
 
-Console.WriteLine("Hello World!");
+//------ MAIN MENU ------
+var mainMenuChoice = 0;
+
+do
+{
+    mainMenuChoice = GetMenuChoiceFromUser(MAIN_MENU_TEXT, "Main Menu");
+
+    switch (mainMenuChoice)
+    {
+        case 1:
+            CreateNewCryptoWallet();
+            break;
+        case 2:
+            break;
+        case 0:
+            return;
+        default:
+            Console.WriteLine("\nThere is no action for provided input!");
+            break;
+    }
+
+} while (mainMenuChoice != 0);
+
+void CreateNewCryptoWallet()
+{
+
+}
+
+//------ GENERAL USE FUNCTIONS ------
+int GetMenuChoiceFromUser(string menuText, string menuTitle)
+{
+    var success = false;
+    var choice = 0;
+
+    do
+    {
+        Console.WriteLine($"\n<<<---------- {menuTitle} ---------->>>");
+
+        Console.WriteLine(menuText);
+        Console.Write("Input your choice: ");
+        success = int.TryParse(Console.ReadLine(), out choice);
+
+        if (!success)
+        {
+            Console.Clear();
+            Console.WriteLine("Value must be a number!\n");
+        }
+
+    } while (!success);
+
+    return choice;
+}
+
+bool ConfirmChoice(string message = "Are you sure?")
+{
+    Console.Write($"\n{message} (y/n): ");
+    return Console.ReadLine().Trim().ToLower() == "y";
+}
+
 Console.ReadKey();
