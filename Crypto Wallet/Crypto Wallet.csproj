@@ -18,7 +18,7 @@
     <None Remove="ConsoleTables" />
     <None Remove="Helpers\" />
     <None Remove="Constants\" />
-    <None Remove="Classes\Interfaces\" />
+    <None Remove="Interfaces\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Classes\" />
@@ -29,7 +29,7 @@
     <Folder Include="Enums\" />
     <Folder Include="Helpers\" />
     <Folder Include="Constants\" />
-    <Folder Include="Classes\Interfaces\" />
+    <Folder Include="Interfaces\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="ConsoleTables" Version="2.4.2" />

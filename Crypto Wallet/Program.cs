@@ -1,4 +1,5 @@
 ﻿using Crypto_Wallet.Classes;
+using Crypto_Wallet.Classes.Wallets;
 using Crypto_Wallet.Classes.Assets;
 using Crypto_Wallet.Enums;
 using ConsoleTables;
@@ -191,10 +192,10 @@ var g_wallets = new List<CryptoWallet>()
 
     new SolanaWallet(new Dictionary<Guid, double>(4)
     {
-        { g_fungibleAssets[2].Address, 0 },
-        { g_fungibleAssets[3].Address, 0 },
-        { g_fungibleAssets[7].Address, 0 },
-        { g_fungibleAssets[8].Address, 0 }
+        { g_fungibleAssets[2].Address, 2 },
+        { g_fungibleAssets[3].Address, 1 },
+        { g_fungibleAssets[7].Address, 4 },
+        { g_fungibleAssets[8].Address, 5 }
     }, new List<Guid>(3)
     {
         g_nonFungibleAssets[6].Address,
@@ -204,10 +205,10 @@ var g_wallets = new List<CryptoWallet>()
 
     new SolanaWallet(new Dictionary<Guid, double>(4)
     {
-        { g_fungibleAssets[2].Address, 0 },
-        { g_fungibleAssets[3].Address, 0 },
-        { g_fungibleAssets[7].Address, 0 },
-        { g_fungibleAssets[8].Address, 0 }
+        { g_fungibleAssets[2].Address, 2.5 },
+        { g_fungibleAssets[3].Address, 3.2 },
+        { g_fungibleAssets[7].Address, 10.8 },
+        { g_fungibleAssets[8].Address, 52.1 }
     }, new List<Guid>(2)
     {
         g_nonFungibleAssets[7].Address,
@@ -273,7 +274,14 @@ void PrintAllWallets()
 
     foreach (var wallet in g_wallets)
     {
-        table.AddRow(wallet.GetWalletType(), wallet.Address, 0, 0);
+        //TODO constant
+        var value = wallet.GetType().BaseType.Name == "CryptoWallet"
+            ? wallet.CalculateFungibleValueInUSD(g_fungibleAssets)
+            : ((CryptoAndNFTWallet)wallet).CalculateValueInUSD(g_fungibleAssets, g_nonFungibleAssets);
+
+        table.AddRow(wallet.GetWalletType(), wallet.Address, $"${value}", wallet.GetValueChange(value));
+
+        wallet.AddValue(value);
     }
 
     table.Write();
@@ -303,6 +311,8 @@ int GetMenuChoiceFromUser(string menuText, string menuTitle)
 
     return choice;
 }
+
+
 
 bool ConfirmChoice(string message = "Are you sure?")
 {
