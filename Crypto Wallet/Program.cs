@@ -1,7 +1,9 @@
 ﻿using Crypto_Wallet.Classes;
 using Crypto_Wallet.Classes.Assets;
 using Crypto_Wallet.Enums;
+using ConsoleTables;
 
+//TODO: Put them in separate files
 #region Constants
 
 const string MAIN_MENU_TEXT =
@@ -9,17 +11,13 @@ const string MAIN_MENU_TEXT =
     + "2 - Access a wallet\n"
     + "0 - Exit Application\n";
 
-const string CREATE_WALLET_MENU_TEXT =
-    "1 - Create a Bitcoin wallet\n"
-    + "2 - Create an Ethereum wallet\n"
-    + "3 - Create a Solana wallet\n"
-    + "0 - Return to main menu\n";
-
 const string ACCESS_WALLET_MENU_TEXT =
     "1 - Portfolio\n"
     + "2 - Transfer assets\n"
     + "3 - Transaction history\n"
     + "0 - Return to main menu\n";
+
+const string CLASS_PREFIX = "Crypto_Wallet.Classes.";
 
 #endregion
 
@@ -232,6 +230,7 @@ do
             CreateNewCryptoWallet();
             break;
         case 2:
+            PrintAllWallets();
             break;
         case 0:
             return;
@@ -242,6 +241,7 @@ do
 
 } while (mainMenuChoice != 0);
 
+//------ NEW CRYPTO WALLET ------
 void CreateNewCryptoWallet()
 {
     Console.Clear();
@@ -252,16 +252,31 @@ void CreateNewCryptoWallet()
 
     var wantedWallet = CapitalizeAndTrim(Console.ReadLine()) + "Wallet";
 
+    Console.WriteLine("WANTED: " + wantedWallet);
+
     if(!Enum.IsDefined(typeof(CryptoWalletTypes), wantedWallet))
     {
         Console.WriteLine("\nWrong input for wallet type! Wallet can be of types:  Bitcoin, Ethereum or Solana");
         return;
     }
 
-    Type walletType = Type.GetType($"Crypto_Wallet.Classes.{wantedWallet}");
+    Type walletType = Type.GetType(CLASS_PREFIX + wantedWallet);
 
     if (ConfirmChoice($"Are you sure you want to add new wallet of type {wantedWallet}?"))
         g_wallets.Add(Activator.CreateInstance(walletType) as CryptoWallet);
+}
+
+//------ ACCESS WALLET ------
+void PrintAllWallets()
+{
+    var table = new ConsoleTable("Wallet Type", "Wallet Address", "USD Asset Value", "Value Change");
+
+    foreach (var wallet in g_wallets)
+    {
+        table.AddRow(wallet.GetWalletType(), wallet.Address, 0, 0);
+    }
+
+    table.Write();
 }
 
 //------ HELPER FUNCTIONS ------

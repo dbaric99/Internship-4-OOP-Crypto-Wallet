@@ -15,6 +15,10 @@
     <None Remove="Classes\Assets\" />
     <None Remove="Classes\Transactions\" />
     <None Remove="Enums\" />
+    <None Remove="ConsoleTables" />
+    <None Remove="Helpers\" />
+    <None Remove="Constants\" />
+    <None Remove="Classes\Interfaces\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Classes\" />
@@ -23,5 +27,11 @@
     <Folder Include="Classes\Assets\" />
     <Folder Include="Classes\Transactions\" />
     <Folder Include="Enums\" />
+    <Folder Include="Helpers\" />
+    <Folder Include="Constants\" />
+    <Folder Include="Classes\Interfaces\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="ConsoleTables" Version="2.4.2" />
   </ItemGroup>
 </Project>

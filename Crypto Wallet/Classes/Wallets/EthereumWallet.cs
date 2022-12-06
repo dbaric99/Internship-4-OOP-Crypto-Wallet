@@ -1,23 +1,13 @@
 ﻿using System;
+using Crypto_Wallet.Classes.Wallets;
+
 namespace Crypto_Wallet.Classes
 {
-	public class EthereumWallet : CryptoWallet
-	{
-		public List<Guid> OwnedNonFungibleAssets { get; set; } = new List<Guid>();
+	public class EthereumWallet : CryptoAndNFTWallet
+    {
+		public EthereumWallet() : base() { }
 
-		public static List<Guid>? SupportedNonFungibleAssets { get; set; }
-
-		public EthereumWallet(Dictionary<Guid,double> ownedFungibleAssets, List<Guid> ownedNonFungibleAssets) : base(ownedFungibleAssets)
-		{
-			OwnedNonFungibleAssets = ownedNonFungibleAssets;
-		}
-
-		public EthereumWallet() : base()
-		{
-            OwnedNonFungibleAssets = new List<Guid>();
-            foreach (var snfa in SupportedNonFungibleAssets)
-                OwnedNonFungibleAssets.Add(snfa);
-        }
-	}
+        public EthereumWallet(Dictionary<Guid, double> ownedFungibleAssets, List<Guid> ownedNonFungibleAssets) : base(ownedFungibleAssets, ownedNonFungibleAssets) { }
+    }
 }
 

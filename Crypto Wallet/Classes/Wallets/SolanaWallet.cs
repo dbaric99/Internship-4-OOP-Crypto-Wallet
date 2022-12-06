@@ -1,23 +1,13 @@
 ﻿using System;
+using Crypto_Wallet.Classes.Wallets;
+
 namespace Crypto_Wallet.Classes
 {
-	public class SolanaWallet : CryptoWallet
+	public class SolanaWallet : CryptoAndNFTWallet
 	{
-        public List<Guid> OwnedNonFungibleAssets { get; set; } = new List<Guid>();
+        public SolanaWallet() : base() { }
 
-        public static List<Guid>? SupportedNonFungibleAssets { get; set; }
-
-        public SolanaWallet(Dictionary<Guid, double> ownedFungibleAssets, List<Guid> ownedNonFungibleAssets) : base(ownedFungibleAssets)
-		{
-			OwnedNonFungibleAssets = ownedNonFungibleAssets;
-		}
-
-		public SolanaWallet() : base()
-		{
-            OwnedNonFungibleAssets = new List<Guid>();
-            foreach (var snfa in SupportedNonFungibleAssets)
-                OwnedNonFungibleAssets.Add(snfa);
-        }
+        public SolanaWallet(Dictionary<Guid, double> ownedFungibleAssets, List<Guid> ownedNonFungibleAssets) : base(ownedFungibleAssets, ownedNonFungibleAssets) { }
 	}
 }
 
