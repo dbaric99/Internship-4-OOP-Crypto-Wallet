@@ -25,6 +25,7 @@ const string MAIN_TYPE = "CryptoWallet";
 
 #endregion
 
+//TODO maybe make global across solution
 #region GlobalProgramProperties
 
 var g_fungibleAssets = new List<FungibleAsset>()
@@ -297,7 +298,8 @@ void PrintAllWallets()
     }
 
     table.Write(Format.Alternative);
-    Console.Write(g_wallets[0].Address);
+    Console.WriteLine(g_wallets[0].Address);
+    Console.WriteLine(g_wallets[4].Address);
 }
 
 double GetValueFromWalletByType(CryptoWallet wallet)
@@ -363,7 +365,6 @@ void Portfolio(CryptoWallet targetWallet)
     //------FUNGIBLE ASSETS ------
     PrintGeneralSectionSeparator("Fungible Assets");
     var fungibleAssetsTable = new ConsoleTable("Address", "Name", "Label", "Value (crypto)", "Total Value (USD)", "Value Change");
-    var nonFungibleAssetsTable = new ConsoleTable("Address", "Name", "Label", "Value (crypto)", "Total Value (USD)", "Value Change");
 
     foreach (var fungAsset in targetWallet.OwnedFungibleAssets)
     {
@@ -385,8 +386,33 @@ void Portfolio(CryptoWallet targetWallet)
 
     fungibleAssetsTable.Write(Format.Alternative);
 
+    if (targetWallet.GetType().BaseType.Name == MAIN_TYPE)
+        return;
+
     //------NON FUNGIBLE ASSETS ------
     PrintGeneralSectionSeparator("Non Fungible Assets");
+    var nonFungibleAssetsTable = new ConsoleTable("Address", "Name", "Value (crypto)", "Total Value (USD)", "Value Change");
+
+    foreach (var nonFungAsset in (targetWallet as CryptoAndNFTWallet).OwnedNonFungibleAssets)
+    {
+        var nonFungAssetObj = g_nonFungibleAssets.First(asset => asset.Address.Equals(nonFungAsset));
+        var belongingFungAsset = g_fungibleAssets.First(asset => asset.Address.Equals(nonFungAssetObj.FungibleAsset));
+
+        var valueInCrypto = nonFungAssetObj.Value * belongingFungAsset.USDValue;
+
+        var valueUSD = 0;
+
+        nonFungibleAssetsTable.AddRow(
+            nonFungAssetObj.Address,
+            nonFungAssetObj.Name,
+            $"{valueInCrypto} {belongingFungAsset.Label}",
+            $"$ {nonFungAssetObj.GetValueInUSD(g_fungibleAssets)}",
+            nonFungAssetObj.CalculateValueChange(valueInCrypto)
+        );
+
+        nonFungAssetObj.AddPastValue(valueUSD);
+    }
+
     nonFungibleAssetsTable.Write(Format.Alternative);
 }
 

@@ -60,15 +60,16 @@ namespace Crypto_Wallet.Classes
 		//TODO refactor #1
 		public void AddValue(double newValue)
 		{
+			if (Values.Any() && Values.Last() == newValue) return;
 			Values.Add(newValue);
 		}
 
 		public string GetValueChange(double newValue)
 		{
-			if (!this.Values.Any())
+			if (!this.Values.Any() || this.Values.Last() == newValue)
 				return "0%";
-
-			if(newValue > this.Values.Last())
+            
+            else if (newValue > this.Values.Last())
 				return $"+{(this.Values.Last() / newValue) * 100}%";
 
 			return $"-{(newValue / this.Values.Last()) * 100}%";

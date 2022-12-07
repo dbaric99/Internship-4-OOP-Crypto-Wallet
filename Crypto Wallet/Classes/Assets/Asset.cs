@@ -18,10 +18,10 @@ namespace Crypto_Wallet.Classes
 		{
 			this.PastValues.Add(newValue);
 		}
-
+		//TODO +0%
 		public string CalculateValueChange(double newValue)
 		{
-            if (!this.PastValues.Any())
+            if (!this.PastValues.Any() || this.PastValues.Last() == newValue)
                 return "0%";
 
             if (newValue > this.PastValues.Last())

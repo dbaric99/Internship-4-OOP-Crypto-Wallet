@@ -12,6 +12,11 @@ namespace Crypto_Wallet.Classes.Assets
 			Value = value;
 			FungibleAsset = fungibleAsset;
 		}
-	}
+
+        public double GetValueInUSD(List<FungibleAsset> allFungibleAssets)
+        {
+			return this.Value * allFungibleAssets.First(asset => asset.Address.Equals(this.FungibleAsset)).USDValue;
+        }
+    }
 }
 
