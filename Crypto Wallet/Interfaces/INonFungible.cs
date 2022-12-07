@@ -5,9 +5,9 @@ namespace Crypto_Wallet.Interfaces
 {
 	public interface INonFungible
 	{
-        public double CalculateNonFungibleValueInUSD(List<NonFungibleAsset> allNonFungibleAssets, List<FungibleAsset> allFungibleAssets);
+        public double CalculateNonFungibleValueInUSD();
 
-        public double CalculateValueInUSD(List<FungibleAsset> allFungibleAssets, List<NonFungibleAsset> allNonFungibleAssets);
+        public double CalculateValueInUSD();
     }
 }
 

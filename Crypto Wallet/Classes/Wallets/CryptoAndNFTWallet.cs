@@ -1,6 +1,7 @@
 ﻿using System;
 using Crypto_Wallet.Classes.Assets;
 using Crypto_Wallet.Interfaces;
+using Crypto_Wallet.Global.Data;
 
 namespace Crypto_Wallet.Classes.Wallets
 {
@@ -26,15 +27,15 @@ namespace Crypto_Wallet.Classes.Wallets
 			OwnedNonFungibleAssets = ownedNonFungibleAssets;
 		}
 
-        public double CalculateNonFungibleValueInUSD(List<NonFungibleAsset> allNonFungibleAssets, List<FungibleAsset> allFungibleAssets)
+        public double CalculateNonFungibleValueInUSD()
         {
             var value = 0d;
 
             foreach (var nonFungAddress in OwnedNonFungibleAssets)
             {
-                var nonFungAsset = allNonFungibleAssets.First(asset => asset.Address.Equals(nonFungAddress));
+                var nonFungAsset = GlobalData.nonFungibleAssets.First(asset => asset.Address.Equals(nonFungAddress));
 
-                var belongingFungibleAsset = allFungibleAssets.First(asset => asset.Address.Equals(nonFungAsset.FungibleAsset));
+                var belongingFungibleAsset = GlobalData.fungibleAssets.First(asset => asset.Address.Equals(nonFungAsset.FungibleAsset));
 
                 value += nonFungAsset.Value * belongingFungibleAsset.USDValue;
             }
@@ -42,9 +43,9 @@ namespace Crypto_Wallet.Classes.Wallets
             return value;
         }
 
-        public double CalculateValueInUSD(List<FungibleAsset> allFungibleAssets, List<NonFungibleAsset> allNonFungibleAssets)
+        public double CalculateValueInUSD()
         {
-            return base.CalculateFungibleValueInUSD(allFungibleAssets) + this.CalculateNonFungibleValueInUSD(allNonFungibleAssets, allFungibleAssets);
+            return base.CalculateFungibleValueInUSD() + this.CalculateNonFungibleValueInUSD();
         }
     }
 }

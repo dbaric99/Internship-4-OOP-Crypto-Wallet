@@ -1,4 +1,6 @@
 ﻿using System;
+using Crypto_Wallet.Global.Data;
+
 namespace Crypto_Wallet.Classes.Assets
 {
 	public class NonFungibleAsset : Asset
@@ -13,9 +15,9 @@ namespace Crypto_Wallet.Classes.Assets
 			FungibleAsset = fungibleAsset;
 		}
 
-        public double GetValueInUSD(List<FungibleAsset> allFungibleAssets)
+        public double GetValueInUSD()
         {
-			return this.Value * allFungibleAssets.First(asset => asset.Address.Equals(this.FungibleAsset)).USDValue;
+			return this.Value * GlobalData.fungibleAssets.First(asset => asset.Address.Equals(this.FungibleAsset)).USDValue;
         }
     }
 }

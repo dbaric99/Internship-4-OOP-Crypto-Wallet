@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using Crypto_Wallet.Classes.Assets;
 using Crypto_Wallet.Interfaces;
+using Crypto_Wallet.Global.Data;
 
 namespace Crypto_Wallet.Classes
 {
@@ -45,13 +46,13 @@ namespace Crypto_Wallet.Classes
 			return Regex.Replace(this.GetType().ToString().Replace("Crypto_Wallet.Classes.", ""), "[A-Z]", " $0");
 		}
 
-        public double CalculateFungibleValueInUSD(List<FungibleAsset> allFungibleAssets)
+        public double CalculateFungibleValueInUSD()
 		{
 			var value = 0d;
 
 			foreach (var ownedFungAsset in OwnedFungibleAssets)
 			{
-				var targetedAsset = allFungibleAssets.First(fa => fa.Address == ownedFungAsset.Key);
+				var targetedAsset = GlobalData.fungibleAssets.First(fa => fa.Address == ownedFungAsset.Key);
 				value += targetedAsset.USDValue * ownedFungAsset.Value;
 			}
 

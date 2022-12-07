@@ -17,8 +17,10 @@
     <None Remove="Enums\" />
     <None Remove="ConsoleTables" />
     <None Remove="Helpers\" />
-    <None Remove="Constants\" />
     <None Remove="Interfaces\" />
+    <None Remove="Global\" />
+    <None Remove="Global\Constants\" />
+    <None Remove="Global\Data\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Classes\" />
@@ -28,8 +30,10 @@
     <Folder Include="Classes\Transactions\" />
     <Folder Include="Enums\" />
     <Folder Include="Helpers\" />
-    <Folder Include="Constants\" />
     <Folder Include="Interfaces\" />
+    <Folder Include="Global\" />
+    <Folder Include="Global\Constants\" />
+    <Folder Include="Global\Data\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="ConsoleTables" Version="2.4.2" />
