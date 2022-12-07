@@ -3,6 +3,7 @@ using Crypto_Wallet.Classes.Wallets;
 using Crypto_Wallet.Classes.Assets;
 using Crypto_Wallet.Enums;
 using ConsoleTables;
+using Crypto_Wallet.Interfaces;
 
 //TODO: Put them in separate files
 #region Constants
@@ -278,18 +279,25 @@ void CreateNewCryptoWallet()
 //------ ACCESS WALLET ------
 void PrintAllWallets()
 {
+    //TODO migrate to class
     var table = new ConsoleTable("Wallet Type", "Wallet Address", "USD Asset Value", "Value Change");
 
     foreach (var wallet in g_wallets)
     {
         var value = GetValueFromWalletByType(wallet);
 
-        table.AddRow(wallet.GetWalletType(), wallet.Address, $"$ {value}", wallet.GetValueChange(value));
+        table.AddRow(
+            wallet.GetWalletType(),
+            wallet.Address,
+            $"$ {value}",
+            wallet.GetValueChange(value)
+        );
 
         wallet.AddValue(value);
     }
 
     table.Write(Format.Alternative);
+    Console.Write(g_wallets[0].Address);
 }
 
 double GetValueFromWalletByType(CryptoWallet wallet)
@@ -347,11 +355,39 @@ void WalletAccessSubmenu(CryptoWallet targetWallet)
     } while (walletAccessSubmenu != 0);
 }
 
+//TODO migrate to class? shorten
 void Portfolio(CryptoWallet targetWallet)
 {
     Console.WriteLine($"All asset value: $ {GetValueFromWalletByType(targetWallet)}");
 
-    var table = new ConsoleTable("Address", "Name", "Label", "Value (crypto)", "Total Value (USD)", "Value Change");
+    //------FUNGIBLE ASSETS ------
+    PrintGeneralSectionSeparator("Fungible Assets");
+    var fungibleAssetsTable = new ConsoleTable("Address", "Name", "Label", "Value (crypto)", "Total Value (USD)", "Value Change");
+    var nonFungibleAssetsTable = new ConsoleTable("Address", "Name", "Label", "Value (crypto)", "Total Value (USD)", "Value Change");
+
+    foreach (var fungAsset in targetWallet.OwnedFungibleAssets)
+    {
+        var fungAssetObj = g_fungibleAssets.First(asset => asset.Address.Equals(fungAsset.Key));
+
+        var values = targetWallet.CalculateFungibleAssetsValue(fungAssetObj);
+
+        fungibleAssetsTable.AddRow(
+            fungAssetObj.Address,
+            fungAssetObj.Name,
+            fungAssetObj.Label,
+            values.cryptoValue,
+            values.usdValue,
+            fungAssetObj.CalculateValueChange(fungAssetObj.USDValue)
+        );
+
+        fungAssetObj.AddPastValue(fungAssetObj.USDValue);
+    }
+
+    fungibleAssetsTable.Write(Format.Alternative);
+
+    //------NON FUNGIBLE ASSETS ------
+    PrintGeneralSectionSeparator("Non Fungible Assets");
+    nonFungibleAssetsTable.Write(Format.Alternative);
 }
 
 //------ HELPER FUNCTIONS ------

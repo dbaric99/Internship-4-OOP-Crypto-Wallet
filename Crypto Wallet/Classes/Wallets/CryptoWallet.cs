@@ -11,7 +11,7 @@ namespace Crypto_Wallet.Classes
 
         public Guid Address { get; }
 		//TODO check references
-        public Dictionary<Guid, double>? OwnedFungibleAssets { get; private set; }
+		public Dictionary<Guid, double> OwnedFungibleAssets { get; private set; } = new Dictionary<Guid, double>();
 
         public static List<Guid>? SupportedFungibleAssets { get; set; }
 
@@ -25,14 +25,15 @@ namespace Crypto_Wallet.Classes
 		{
 			Address = Guid.NewGuid();
 			OwnedFungibleAssets = ownedFungibleAssets;
-		}
+
+			foreach (var ownedFung in ownedFungibleAssets)
+				OwnedFungibleAssets[ownedFung.Key] = ownedFung.Value;
+        }
 
 		//TODO
 		public CryptoWallet()
 		{
 			Address = Guid.NewGuid();
-
-			OwnedFungibleAssets = new Dictionary<Guid, double>();
 
 			foreach (var sfa in SupportedFungibleAssets)
 				OwnedFungibleAssets.Add(sfa, 0);
@@ -56,7 +57,7 @@ namespace Crypto_Wallet.Classes
 
 			return value;
 		}
-
+		//TODO refactor #1
 		public void AddValue(double newValue)
 		{
 			Values.Add(newValue);
@@ -71,6 +72,14 @@ namespace Crypto_Wallet.Classes
 				return $"+{(this.Values.Last() / newValue) * 100}%";
 
 			return $"-{(newValue / this.Values.Last()) * 100}%";
+		}
+
+		public (string cryptoValue, string usdValue) CalculateFungibleAssetsValue(FungibleAsset targetFungAsset)
+		{
+			var amount = OwnedFungibleAssets[targetFungAsset.Address];
+			var usdValue = amount * targetFungAsset.USDValue;
+
+			return ($"{amount} {targetFungAsset.Label}", $"$ {usdValue}");
 		}
     }
 }
