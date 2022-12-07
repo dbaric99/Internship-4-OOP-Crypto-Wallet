@@ -91,11 +91,11 @@ void PrintAllWallets()
 
 double GetValueFromWalletByType(CryptoWallet wallet)
 {
-    return wallet.GetType().BaseType.Name == GeneralConstants.MAIN_TYPE
+    return !wallet.SupportsNFT()
             ? wallet.CalculateFungibleValueInUSD()
             : ((CryptoAndNFTWallet)wallet).CalculateValueInUSD();
 }
-//TODO unify: input guid returns it if it is in the list
+
 CryptoWallet GetWalletByAddress(string queryMessage, string rejectionMessage)
 {
     var success = false;
@@ -115,6 +115,54 @@ CryptoWallet GetWalletByAddress(string queryMessage, string rejectionMessage)
         Console.WriteLine(rejectionMessage);
 
     return wallet;
+}
+
+Asset GetAssetFromWalletByGuid(CryptoWallet wallet)
+{
+    var success = false;
+
+    Console.Write("\nInput address of asset you are sending: ");
+    success = Guid.TryParse(Console.ReadLine(), out Guid assetAddress);
+
+    if (!success)
+    {
+        Console.WriteLine("Input value needs to be a Guid!");
+        return null;
+    }
+
+    var asset = (Asset)(GlobalData.fungibleAssets.First(asset => asset.Address.Equals(assetAddress)) != null
+        ? GlobalData.fungibleAssets.FirstOrDefault(asset => asset.Address.Equals(assetAddress))
+        : GlobalData.nonFungibleAssets.FirstOrDefault(asset => asset.Address.Equals(assetAddress)));
+
+    if(asset == null)
+        Console.WriteLine("There is no asset with that address!");
+
+    if (!wallet.SupportsNFT())
+    {
+        if (!CryptoWallet.SupportedFungibleAssets.Contains(assetAddress))
+        {
+            Console.WriteLine("\nAsset not supported!");
+            Console.WriteLine("Supported assets for the wallet type are: ");
+            foreach (var fungAsset in CryptoWallet.SupportedFungibleAssets)
+            {
+                Console.WriteLine($"\t{fungAsset} - {GlobalData.fungibleAssets.FirstOrDefault(asset => asset.Address.Equals(fungAsset)).Name}");
+                return null;
+            }
+        }
+    }
+
+    if (!CryptoAndNFTWallet.SupportedNonFungibleAssets.Contains(assetAddress))
+    {
+        Console.WriteLine("\nAsset not supported!");
+        Console.WriteLine("Supported assets for the wallet type are: ");
+        foreach (var nonFungAsset in CryptoAndNFTWallet.SupportedNonFungibleAssets)
+        {
+            Console.WriteLine($"\t{nonFungAsset} - {GlobalData.nonFungibleAssets.FirstOrDefault(asset => asset.Address.Equals(nonFungAsset)).Name}");
+            return null;
+        }
+    }
+
+    return asset;
 }
 
 void WalletAccessSubmenu(CryptoWallet targetWallet)
@@ -147,8 +195,19 @@ void WalletAccessSubmenu(CryptoWallet targetWallet)
 
 void Transfer(CryptoWallet senderWallet)
 {
-    Console.WriteLine("TRANSFER HAPPENING");
     var receivingWallet = GetWalletByAddress(MessageConstants.ACCESS_WALLET_TRANSFER_MESSAGE, MessageConstants.ACESS_WALLET_FAILED_MESSAGE);
+
+    if (senderWallet.Equals(receivingWallet))
+    {
+        Console.WriteLine("\nSender and receiver wallet cannot be the same!");
+        return;
+    }
+
+    var assetToSend = GetAssetFromWalletByGuid(senderWallet);
+
+    if (assetToSend == null) return;
+
+
 }
 
 //TODO migrate to class? shorten
@@ -180,7 +239,7 @@ void Portfolio(CryptoWallet targetWallet)
 
     fungibleAssetsTable.Write(Format.Alternative);
 
-    if (targetWallet.GetType().BaseType.Name == GeneralConstants.MAIN_TYPE)
+    if (!targetWallet.SupportsNFT())
         return;
 
     //------NON FUNGIBLE ASSETS ------

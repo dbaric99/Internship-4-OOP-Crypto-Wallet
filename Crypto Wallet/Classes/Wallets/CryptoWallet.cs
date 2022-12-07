@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using Crypto_Wallet.Classes.Assets;
 using Crypto_Wallet.Interfaces;
 using Crypto_Wallet.Global.Data;
+using Crypto_Wallet.Global.Constants;
 
 namespace Crypto_Wallet.Classes
 {
@@ -83,6 +84,11 @@ namespace Crypto_Wallet.Classes
 
 			return ($"{amount} {targetFungAsset.Label}", $"$ {usdValue}");
 		}
+
+		public bool SupportsNFT()
+		{
+			return this.GetType().BaseType.Name == GeneralConstants.MAIN_TYPE;
+        }
     }
 }
 
