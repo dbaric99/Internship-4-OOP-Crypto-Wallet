@@ -6,8 +6,10 @@ using ConsoleTables;
 using Crypto_Wallet.Interfaces;
 using Crypto_Wallet.Global.Constants;
 using Crypto_Wallet.Global.Data;
+using Crypto_Wallet.Classes.Transactions;
 
 var globalData = new GlobalData();
+var allTransactions = new List<Transaction>();
 
 //------ MAIN MENU ------
 var mainMenuChoice = 0;
@@ -179,7 +181,10 @@ void WalletAccessSubmenu(CryptoWallet targetWallet)
                 Portfolio(targetWallet);
                 break;
             case 2:
-                Transfer(targetWallet);
+                if(Transfer(targetWallet))
+                    Console.WriteLine("\nAsset transfer successful!");
+                else
+                    Console.WriteLine("\nAsset transfer failed!");
                 break;
             case 3:
                 break;
@@ -193,21 +198,67 @@ void WalletAccessSubmenu(CryptoWallet targetWallet)
     } while (walletAccessSubmenu != 0);
 }
 
-void Transfer(CryptoWallet senderWallet)
+bool Transfer(CryptoWallet senderWallet)
 {
     var receivingWallet = GetWalletByAddress(MessageConstants.ACCESS_WALLET_TRANSFER_MESSAGE, MessageConstants.ACESS_WALLET_FAILED_MESSAGE);
 
     if (senderWallet.Equals(receivingWallet))
     {
         Console.WriteLine("\nSender and receiver wallet cannot be the same!");
-        return;
+        return false;
     }
 
     var assetToSend = GetAssetFromWalletByGuid(senderWallet);
 
-    if (assetToSend == null) return;
+    if (assetToSend == null) return false;
 
+    if (assetToSend.GetType().BaseType.Name == GeneralConstants.FUNGIBLE_ASSET_TYPE)
+        return HandleFungibleAssetTransaction(senderWallet, receivingWallet, (FungibleAsset)assetToSend);
+    else
+        return HandleNonFungibleAssetTransaction(senderWallet, receivingWallet, (NonFungibleAsset)assetToSend);
+}
 
+bool HandleFungibleAssetTransaction(CryptoWallet senderWallet, CryptoWallet receiverWallet, FungibleAsset sendingCrypto)
+{
+    var success = false;
+
+    Console.Write("\nInsert amount of fungible asset you are sending: ");
+    success = double.TryParse(Console.ReadLine(), out double amount);
+
+    if (!success)
+    {
+        Console.WriteLine("\nAmount must be a number!");
+        return false;
+    }
+    else if (senderWallet.OwnedFungibleAssets[sendingCrypto.Address] < amount)
+    {
+        Console.WriteLine("\nBalance insufficient!");
+        return false;
+    }
+
+    var senderStartBalance = senderWallet.GetFungibleValue(sendingCrypto.Address);
+
+    var receiverStartBalance = receiverWallet.GetFungibleValue(sendingCrypto.Address);
+
+    var senderEndBalance = senderWallet.FungibleValueManipulation(sendingCrypto.Address, amount, false);
+
+    var receiverEndBalance = receiverWallet.FungibleValueManipulation(sendingCrypto.Address, amount, true);
+
+    var transactionInProgress = new FungibleAssetTransaction(senderWallet.Address, receiverWallet.Address, sendingCrypto.Address, senderStartBalance, senderEndBalance, receiverStartBalance, receiverEndBalance);
+
+    sendingCrypto.ChangeAssetValue();
+
+    senderWallet.AddTransaction(transactionInProgress);
+    receiverWallet.AddTransaction(transactionInProgress);
+
+    allTransactions.Add(transactionInProgress);
+
+    return true;
+}
+
+bool HandleNonFungibleAssetTransaction(CryptoWallet senderWallet, CryptoWallet receiverWallet, NonFungibleAsset sendingNFT)
+{
+    return true;
 }
 
 //TODO migrate to class? shorten

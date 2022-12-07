@@ -13,6 +13,20 @@ namespace Crypto_Wallet.Classes.Assets
 			Label = label;
 			USDValue = value;
 		}
+
+		public void ChangeAssetValue()
+		{
+			var options = new int[2] { 1, -1 };
+			var random = new Random();
+			var signum = options[random.Next(0, options.Length)];
+
+			var percentage = random.NextDouble() * 2.5 * signum;
+
+			var newValue = USDValue + (USDValue * (percentage / 100));
+
+			this.USDValue = newValue;
+			this.AddPastValue(newValue);
+		}
 	}
 }
 

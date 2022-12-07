@@ -4,6 +4,7 @@ using Crypto_Wallet.Classes.Assets;
 using Crypto_Wallet.Interfaces;
 using Crypto_Wallet.Global.Data;
 using Crypto_Wallet.Global.Constants;
+using Crypto_Wallet.Classes.Transactions;
 
 namespace Crypto_Wallet.Classes
 {
@@ -89,6 +90,32 @@ namespace Crypto_Wallet.Classes
 		{
 			return this.GetType().BaseType.Name == GeneralConstants.MAIN_TYPE;
         }
+
+		public double GetFungibleValue(Guid fungibleAssetAddress)
+		{
+			return OwnedFungibleAssets[fungibleAssetAddress];
+		}
+
+		public double FungibleValueManipulation(Guid fungibleAssetAddress, double amount, bool isReceiving)
+		{
+			OwnedFungibleAssets[fungibleAssetAddress] = isReceiving
+				? OwnedFungibleAssets[fungibleAssetAddress] + amount
+				: OwnedFungibleAssets[fungibleAssetAddress] - amount;
+
+			AddValue(OwnedFungibleAssets[fungibleAssetAddress]);
+
+			return OwnedFungibleAssets[fungibleAssetAddress];
+		}
+
+		public void AddTransaction(Transaction transactionToAdd)
+		{
+			this.Transactions.Add(transactionToAdd.Id);
+		}
+
+		public void RemoveTransaction(Guid transactionId)
+		{
+			this.Transactions.Remove(transactionId);
+		}
     }
 }
 

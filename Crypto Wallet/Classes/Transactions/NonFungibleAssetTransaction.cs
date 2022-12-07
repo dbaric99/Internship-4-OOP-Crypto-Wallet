@@ -5,9 +5,9 @@ namespace Crypto_Wallet.Classes.Transactions
 	{
 		public Guid NonFungibleAsset { get; }
 
-		public NonFungibleAssetTransaction() : base()
+		public NonFungibleAssetTransaction(Guid senderAddress, Guid receiverAddress, Guid nonFungibleAssetAddress) : base(senderAddress, receiverAddress)
 		{
-
+			NonFungibleAsset = nonFungibleAssetAddress;
 		}
 	}
 }

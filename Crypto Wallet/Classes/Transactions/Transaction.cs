@@ -7,11 +7,14 @@ namespace Crypto_Wallet.Classes.Transactions
 		public DateTime Date { get; }
 		public Guid Sender { get; }
 		public Guid Receiver { get; }
-		public bool isRevoked { get; set; }
+		public bool isRevoked { get; private set; }
 
-		public Transaction()
+		public Transaction(Guid senderAddress, Guid receiverAddress)
 		{
 			Id = Guid.NewGuid();
+			Date = DateTime.Now;
+			Sender = senderAddress;
+			Receiver = receiverAddress;
 		}
 	}
 }
