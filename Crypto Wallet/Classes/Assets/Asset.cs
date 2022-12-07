@@ -7,6 +7,8 @@ namespace Crypto_Wallet.Classes
 		//TODO unique
 		public string Name { get; set; }
 
+		public List<double> PastValues { get; private set; }
+
 		public Asset()
 		{
 			Address = Guid.NewGuid();

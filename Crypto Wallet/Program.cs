@@ -20,6 +20,8 @@ const string ACCESS_WALLET_MENU_TEXT =
 
 const string CLASS_PREFIX = "Crypto_Wallet.Classes.";
 
+const string MAIN_TYPE = "CryptoWallet";
+
 #endregion
 
 #region GlobalProgramProperties
@@ -231,7 +233,13 @@ do
             CreateNewCryptoWallet();
             break;
         case 2:
+            Console.Clear();
             PrintAllWallets();
+            var targetWallet = GetWalletByAddress();
+            if (targetWallet == null)
+                break;
+            Console.Clear();
+            WalletAccessSubmenu(targetWallet);
             break;
         case 0:
             return;
@@ -274,17 +282,76 @@ void PrintAllWallets()
 
     foreach (var wallet in g_wallets)
     {
-        //TODO constant
-        var value = wallet.GetType().BaseType.Name == "CryptoWallet"
-            ? wallet.CalculateFungibleValueInUSD(g_fungibleAssets)
-            : ((CryptoAndNFTWallet)wallet).CalculateValueInUSD(g_fungibleAssets, g_nonFungibleAssets);
+        var value = GetValueFromWalletByType(wallet);
 
-        table.AddRow(wallet.GetWalletType(), wallet.Address, $"${value}", wallet.GetValueChange(value));
+        table.AddRow(wallet.GetWalletType(), wallet.Address, $"$ {value}", wallet.GetValueChange(value));
 
         wallet.AddValue(value);
     }
 
-    table.Write();
+    table.Write(Format.Alternative);
+}
+
+double GetValueFromWalletByType(CryptoWallet wallet)
+{
+    return wallet.GetType().BaseType.Name == MAIN_TYPE
+            ? wallet.CalculateFungibleValueInUSD(g_fungibleAssets)
+            : ((CryptoAndNFTWallet)wallet).CalculateValueInUSD(g_fungibleAssets, g_nonFungibleAssets);
+}
+
+CryptoWallet GetWalletByAddress()
+{
+    var success = false;
+
+    Console.Write("\nInput the address of a wallet you want to access: ");
+    success = Guid.TryParse(Console.ReadLine(), out Guid walletAddress);
+
+    if (!success)
+    {
+        Console.WriteLine("Input value needs to be a Guid!");
+        return null;
+    }
+
+    var wallet = g_wallets.FirstOrDefault(wallet => wallet.Address.Equals(walletAddress));
+
+    if(wallet == null)
+        Console.WriteLine("There is no wallet by the target guid!");
+
+    return wallet;
+}
+
+void WalletAccessSubmenu(CryptoWallet targetWallet)
+{
+    var walletAccessSubmenu = 0;
+
+    do
+    {
+        walletAccessSubmenu = GetMenuChoiceFromUser(ACCESS_WALLET_MENU_TEXT, "Access Wallet");
+
+        switch (walletAccessSubmenu)
+        {
+            case 1:
+                Portfolio(targetWallet);
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            case 0:
+                return;
+            default:
+                Console.WriteLine("\nThere is no action for provided input!");
+                break;
+        }
+
+    } while (walletAccessSubmenu != 0);
+}
+
+void Portfolio(CryptoWallet targetWallet)
+{
+    Console.WriteLine($"All asset value: $ {GetValueFromWalletByType(targetWallet)}");
+
+    var table = new ConsoleTable("Address", "Name", "Label", "Value (crypto)", "Total Value (USD)", "Value Change");
 }
 
 //------ HELPER FUNCTIONS ------
