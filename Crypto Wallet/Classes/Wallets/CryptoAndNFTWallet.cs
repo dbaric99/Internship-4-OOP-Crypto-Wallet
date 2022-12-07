@@ -9,9 +9,9 @@ namespace Crypto_Wallet.Classes.Wallets
 	{
         #region Properties
         //TODO check references
-        public List<Guid>? OwnedNonFungibleAssets { get; set; }
+        public List<Guid> OwnedNonFungibleAssets { get; set; } = new List<Guid>();
 
-        public static List<Guid>? SupportedNonFungibleAssets { get; set; }
+        public static List<Guid> SupportedNonFungibleAssets { get; set; } = new List<Guid>();
 
         #endregion
 
@@ -26,6 +26,11 @@ namespace Crypto_Wallet.Classes.Wallets
 		{
 			OwnedNonFungibleAssets = ownedNonFungibleAssets;
 		}
+
+        public static void AddSupportedNonFungibleAssets(List<Guid> supportedNonFungAssets)
+        {
+            SupportedNonFungibleAssets.AddRange(supportedNonFungAssets);
+        }
 
         public double CalculateNonFungibleValueInUSD()
         {
@@ -46,6 +51,16 @@ namespace Crypto_Wallet.Classes.Wallets
         public double CalculateValueInUSD()
         {
             return base.CalculateFungibleValueInUSD() + this.CalculateNonFungibleValueInUSD();
+        }
+
+        public void SendNonFungibleAsset(Guid nonFungAddress)
+        {
+            this.OwnedNonFungibleAssets.Remove(nonFungAddress);
+        }
+
+        public void ReceiveNonFungibleAsset(Guid nonFungAddress)
+        {
+            this.OwnedNonFungibleAssets.Add(nonFungAddress);
         }
     }
 }

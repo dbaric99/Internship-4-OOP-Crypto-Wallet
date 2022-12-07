@@ -16,7 +16,7 @@ namespace Crypto_Wallet.Classes
 		//TODO check references
 		public Dictionary<Guid, double> OwnedFungibleAssets { get; private set; } = new Dictionary<Guid, double>();
 
-        public static List<Guid>? SupportedFungibleAssets { get; set; }
+		public static List<Guid> SupportedFungibleAssets { get; set; } = new List<Guid>();
 
         public List<Guid> Transactions { get; private set; }
 
@@ -42,10 +42,14 @@ namespace Crypto_Wallet.Classes
 				OwnedFungibleAssets.Add(sfa, 0);
 		}
 
-		//TODO use global constants file?
+		public static void AddSupportedFungibleAssets(List<Guid> supportedFungAssets)
+		{
+			SupportedFungibleAssets.AddRange(supportedFungAssets);
+		}
+
 		public string GetWalletType()
 		{
-			return Regex.Replace(this.GetType().ToString().Replace("Crypto_Wallet.Classes.", ""), "[A-Z]", " $0");
+			return Regex.Replace(this.GetType().ToString().Replace(GeneralConstants.CLASS_PREFIX, ""), "[A-Z]", " $0");
 		}
 
         public double CalculateFungibleValueInUSD()
@@ -107,9 +111,9 @@ namespace Crypto_Wallet.Classes
 			return OwnedFungibleAssets[fungibleAssetAddress];
 		}
 
-		public void AddTransaction(Transaction transactionToAdd)
+		public void AddTransaction(Guid transactionToAddAddress)
 		{
-			this.Transactions.Add(transactionToAdd.Id);
+			this.Transactions.Add(transactionToAddAddress);
 		}
 
 		public void RemoveTransaction(Guid transactionId)

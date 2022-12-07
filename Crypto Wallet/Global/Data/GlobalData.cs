@@ -149,13 +149,13 @@ namespace Crypto_Wallet.Global.Data
 
         public GlobalData()
         {
-            BitcoinWallet.SupportedFungibleAssets = new List<Guid>(2)
+            BitcoinWallet.AddSupportedFungibleAssets(new List<Guid>(2)
             {
                 fungibleAssets[0].Address,
                 fungibleAssets[6].Address
-            };
+            });
 
-            EthereumWallet.SupportedFungibleAssets = new List<Guid>(6)
+            EthereumWallet.AddSupportedFungibleAssets(new List<Guid>(6)
             {
                 fungibleAssets[1].Address,
                 fungibleAssets[3].Address,
@@ -163,9 +163,9 @@ namespace Crypto_Wallet.Global.Data
                 fungibleAssets[5].Address,
                 fungibleAssets[6].Address,
                 fungibleAssets[9].Address
-            };
+            });
 
-            EthereumWallet.SupportedNonFungibleAssets = new List<Guid>(14)
+            EthereumWallet.AddSupportedNonFungibleAssets(new List<Guid>(14)
             {
                 nonFungibleAssets[0].Address,
                 nonFungibleAssets[1].Address,
@@ -181,17 +181,17 @@ namespace Crypto_Wallet.Global.Data
                 nonFungibleAssets[15].Address,
                 nonFungibleAssets[16].Address,
                 nonFungibleAssets[19].Address
-            };
+            });
 
-            SolanaWallet.SupportedFungibleAssets = new List<Guid>(4)
+            SolanaWallet.AddSupportedFungibleAssets(new List<Guid>(4)
             {
                 fungibleAssets[2].Address,
                 fungibleAssets[3].Address,
                 fungibleAssets[7].Address,
                 fungibleAssets[8].Address
-            };
+            });
 
-            SolanaWallet.SupportedNonFungibleAssets = new List<Guid>(6)
+            SolanaWallet.AddSupportedNonFungibleAssets(new List<Guid>(6)
             {
                 nonFungibleAssets[6].Address,
                 nonFungibleAssets[7].Address,
@@ -199,7 +199,7 @@ namespace Crypto_Wallet.Global.Data
                 nonFungibleAssets[9].Address,
                 nonFungibleAssets[17].Address,
                 nonFungibleAssets[18].Address
-            };
+            });
         }
     }
 }

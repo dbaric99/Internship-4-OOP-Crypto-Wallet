@@ -220,6 +220,8 @@ bool Transfer(CryptoWallet senderWallet)
 
 bool HandleFungibleAssetTransaction(CryptoWallet senderWallet, CryptoWallet receiverWallet, FungibleAsset sendingCrypto)
 {
+    //TODO check if wallets support the type
+
     var success = false;
 
     Console.Write("\nInsert amount of fungible asset you are sending: ");
@@ -236,6 +238,10 @@ bool HandleFungibleAssetTransaction(CryptoWallet senderWallet, CryptoWallet rece
         return false;
     }
 
+    if (!ConfirmChoice(MessageConstants.TRANSACTION_CONFORMATION_MESSAGE))
+        return false;
+
+    //TODO maybe add this logic to the class when adding new transaction
     var senderStartBalance = senderWallet.GetFungibleValue(sendingCrypto.Address);
 
     var receiverStartBalance = receiverWallet.GetFungibleValue(sendingCrypto.Address);
@@ -248,8 +254,8 @@ bool HandleFungibleAssetTransaction(CryptoWallet senderWallet, CryptoWallet rece
 
     sendingCrypto.ChangeAssetValue();
 
-    senderWallet.AddTransaction(transactionInProgress);
-    receiverWallet.AddTransaction(transactionInProgress);
+    senderWallet.AddTransaction(transactionInProgress.Id);
+    receiverWallet.AddTransaction(transactionInProgress.Id);
 
     allTransactions.Add(transactionInProgress);
 
@@ -258,6 +264,32 @@ bool HandleFungibleAssetTransaction(CryptoWallet senderWallet, CryptoWallet rece
 
 bool HandleNonFungibleAssetTransaction(CryptoWallet senderWallet, CryptoWallet receiverWallet, NonFungibleAsset sendingNFT)
 {
+    //TODO check if wallets support the type
+    if (!senderWallet.SupportsNFT())
+    {
+        Console.WriteLine("\nYour wallet type doesn't support non fungible assets!");
+        return false;
+    }
+    else if (!receiverWallet.SupportsNFT())
+    {
+        Console.WriteLine("\nYou cannot send non fungible assets to a wallet that doesn't support them!");
+        return false;
+    }
+    else if((senderWallet as CryptoAndNFTWallet).OwnedNonFungibleAssets.FirstOrDefault(asset => asset.Equals(sendingNFT.Address)) == null)
+    {
+        Console.WriteLine("\nYou do not own that specific non fungible asset!");
+        return false;
+    }
+
+    //TODO migrate
+    var transactionInProgress = new NonFungibleAssetTransaction(senderWallet.Address, receiverWallet.Address, sendingNFT.Address);
+
+    senderWallet.AddTransaction(transactionInProgress.Id);
+    receiverWallet.AddTransaction(transactionInProgress.Id);
+
+    (senderWallet as CryptoAndNFTWallet).SendNonFungibleAsset(sendingNFT.Address);
+    (receiverWallet as CryptoAndNFTWallet).ReceiveNonFungibleAsset(sendingNFT.Address);
+
     return true;
 }
 

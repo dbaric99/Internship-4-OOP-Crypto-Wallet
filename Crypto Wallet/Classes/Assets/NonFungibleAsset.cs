@@ -19,6 +19,11 @@ namespace Crypto_Wallet.Classes.Assets
         {
 			return this.Value * GlobalData.fungibleAssets.First(asset => asset.Address.Equals(this.FungibleAsset)).USDValue;
         }
+
+        public void ChangeBelongingFungibleValue(Guid nonFungAddress)
+        {
+            //TODO
+        }
     }
 }
 
