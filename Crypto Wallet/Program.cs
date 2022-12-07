@@ -4,26 +4,7 @@ using Crypto_Wallet.Classes.Assets;
 using Crypto_Wallet.Enums;
 using ConsoleTables;
 using Crypto_Wallet.Interfaces;
-
-//TODO: Put them in separate files
-#region Constants
-
-const string MAIN_MENU_TEXT =
-    "1 - Create a wallet\n"
-    + "2 - Access a wallet\n"
-    + "0 - Exit Application\n";
-
-const string ACCESS_WALLET_MENU_TEXT =
-    "1 - Portfolio\n"
-    + "2 - Transfer assets\n"
-    + "3 - Transaction history\n"
-    + "0 - Return to main menu\n";
-
-const string CLASS_PREFIX = "Crypto_Wallet.Classes.";
-
-const string MAIN_TYPE = "CryptoWallet";
-
-#endregion
+using Crypto_Wallet.Constants;
 
 //TODO maybe make global across solution
 #region GlobalProgramProperties
@@ -227,7 +208,7 @@ var mainMenuChoice = 0;
 
 do
 {
-    mainMenuChoice = GetMenuChoiceFromUser(MAIN_MENU_TEXT, "Main Menu");
+    mainMenuChoice = GetMenuChoiceFromUser(MenuConstants.MAIN_MENU_TEXT, "Main Menu");
 
     switch (mainMenuChoice)
     {
@@ -237,7 +218,7 @@ do
         case 2:
             Console.Clear();
             PrintAllWallets();
-            var targetWallet = GetWalletByAddress();
+            var targetWallet = GetWalletByAddress(MessageConstants.ACCESS_WALLET_REQUEST_MESSAGE, MessageConstants.ACESS_WALLET_FAILED_MESSAGE);
             if (targetWallet == null)
                 break;
             Console.Clear();
@@ -271,7 +252,7 @@ void CreateNewCryptoWallet()
         return;
     }
 
-    Type walletType = Type.GetType(CLASS_PREFIX + wantedWallet);
+    Type walletType = Type.GetType(GeneralConstants.CLASS_PREFIX + wantedWallet);
 
     if (ConfirmChoice($"Are you sure you want to add new wallet of type {wantedWallet}?"))
         g_wallets.Add(Activator.CreateInstance(walletType) as CryptoWallet);
@@ -304,16 +285,16 @@ void PrintAllWallets()
 
 double GetValueFromWalletByType(CryptoWallet wallet)
 {
-    return wallet.GetType().BaseType.Name == MAIN_TYPE
+    return wallet.GetType().BaseType.Name == GeneralConstants.MAIN_TYPE
             ? wallet.CalculateFungibleValueInUSD(g_fungibleAssets)
             : ((CryptoAndNFTWallet)wallet).CalculateValueInUSD(g_fungibleAssets, g_nonFungibleAssets);
 }
-
-CryptoWallet GetWalletByAddress()
+//TODO unify: input guid returns it if it is in the list
+CryptoWallet GetWalletByAddress(string queryMessage, string rejectionMessage)
 {
     var success = false;
 
-    Console.Write("\nInput the address of a wallet you want to access: ");
+    Console.Write(queryMessage);
     success = Guid.TryParse(Console.ReadLine(), out Guid walletAddress);
 
     if (!success)
@@ -325,7 +306,7 @@ CryptoWallet GetWalletByAddress()
     var wallet = g_wallets.FirstOrDefault(wallet => wallet.Address.Equals(walletAddress));
 
     if(wallet == null)
-        Console.WriteLine("There is no wallet by the target guid!");
+        Console.WriteLine(rejectionMessage);
 
     return wallet;
 }
@@ -336,7 +317,7 @@ void WalletAccessSubmenu(CryptoWallet targetWallet)
 
     do
     {
-        walletAccessSubmenu = GetMenuChoiceFromUser(ACCESS_WALLET_MENU_TEXT, "Access Wallet");
+        walletAccessSubmenu = GetMenuChoiceFromUser(MenuConstants.ACCESS_WALLET_MENU_TEXT, "Access Wallet");
 
         switch (walletAccessSubmenu)
         {
@@ -344,6 +325,7 @@ void WalletAccessSubmenu(CryptoWallet targetWallet)
                 Portfolio(targetWallet);
                 break;
             case 2:
+                Transfer(targetWallet);
                 break;
             case 3:
                 break;
@@ -355,6 +337,12 @@ void WalletAccessSubmenu(CryptoWallet targetWallet)
         }
 
     } while (walletAccessSubmenu != 0);
+}
+
+void Transfer(CryptoWallet senderWallet)
+{
+    Console.WriteLine("TRANSFER HAPPENING");
+    var receivingWallet = GetWalletByAddress(MessageConstants.ACCESS_WALLET_TRANSFER_MESSAGE, MessageConstants.ACESS_WALLET_FAILED_MESSAGE);
 }
 
 //TODO migrate to class? shorten
@@ -386,7 +374,7 @@ void Portfolio(CryptoWallet targetWallet)
 
     fungibleAssetsTable.Write(Format.Alternative);
 
-    if (targetWallet.GetType().BaseType.Name == MAIN_TYPE)
+    if (targetWallet.GetType().BaseType.Name == GeneralConstants.MAIN_TYPE)
         return;
 
     //------NON FUNGIBLE ASSETS ------
@@ -417,6 +405,7 @@ void Portfolio(CryptoWallet targetWallet)
 }
 
 //------ HELPER FUNCTIONS ------
+#region Helpers
 int GetMenuChoiceFromUser(string menuText, string menuTitle)
 {
     var success = false;
@@ -459,5 +448,6 @@ string CapitalizeAndTrim(string input)
     input = input.Trim().ToLower();
     return input.First().ToString().ToUpper() + String.Join("", input.Skip(1));
 }
+#endregion
 
 Console.ReadKey();
