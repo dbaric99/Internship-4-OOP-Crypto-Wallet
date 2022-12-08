@@ -21,7 +21,7 @@ namespace Crypto_Wallet.Classes.Transactions
 
         public bool IsNonFungible()
         {
-			return this.GetType().BaseType.Name == GeneralConstants.NONFUNGIBLE_TRANSACTION_TYPE;
+			return this.GetType().Name == GeneralConstants.NONFUNGIBLE_TRANSACTION_TYPE;
 
         }
 

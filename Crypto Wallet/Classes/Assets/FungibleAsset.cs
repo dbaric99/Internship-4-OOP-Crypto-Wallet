@@ -3,7 +3,6 @@ namespace Crypto_Wallet.Classes.Assets
 {
 	public class FungibleAsset : Asset
 	{
-		//TODO unique
 		public string Label { get; set; }
 		public double USDValue { get; private set; }
 

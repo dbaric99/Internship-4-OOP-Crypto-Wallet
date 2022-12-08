@@ -20,7 +20,7 @@ namespace Crypto_Wallet.Classes.Assets
 			return this.Value * GlobalData.fungibleAssets.First(asset => asset.Address.Equals(this.FungibleAsset)).USDValue;
         }
 
-		//TODO migrate
+		//TODO doesn't work
         public void ChangeBelongingFungibleValue()
         {
 			var nonFungAssetObj = GlobalData.nonFungibleAssets.First(asset => asset.Address.Equals(Address));
