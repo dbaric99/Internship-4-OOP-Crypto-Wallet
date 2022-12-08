@@ -19,12 +19,12 @@ namespace Crypto_Wallet.Classes
 			this.PastValues.Add(newValue);
 		}
 		//TODO +0%
-		public string CalculateValueChange(double newValue)
+		public string CalculateValueChange()
 		{
-            if (!this.PastValues.Any() || this.PastValues.Last() == newValue)
+            if (this.PastValues.Count() < 2 || this.PastValues.Last() == this.PastValues[this.PastValues.Count() - 2])
                 return "0%";
 
-            return $"{Math.Round(((newValue - this.PastValues.Last()) / this.PastValues.Last()) * 100, 2)}%";
+			return $"{Math.Round(((this.PastValues.Last() - this.PastValues[^2]) / this.PastValues[this.PastValues.Count() - 2]) * 100, 2)}%";
         }
     }
 }

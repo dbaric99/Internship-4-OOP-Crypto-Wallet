@@ -297,12 +297,12 @@ bool HandleFungibleAssetTransaction(CryptoWallet senderWallet, CryptoWallet rece
 
     var transactionInProgress = new FungibleAssetTransaction(senderWallet.Address, receiverWallet.Address, sendingCrypto.Address, senderStartBalance, senderEndBalance, receiverStartBalance, receiverEndBalance);
 
-    sendingCrypto.ChangeAssetValue();
-
     senderWallet.AddTransaction(transactionInProgress.Id);
     receiverWallet.AddTransaction(transactionInProgress.Id);
 
     allTransactions.Add(transactionInProgress);
+
+    sendingCrypto.ChangeAssetValue();
 
     return true;
 }
@@ -334,8 +334,6 @@ bool HandleNonFungibleAssetTransaction(CryptoWallet senderWallet, CryptoWallet r
     //TODO migrate
     var transactionInProgress = new NonFungibleAssetTransaction(senderWallet.Address, receiverWallet.Address, sendingNFT.Address);
 
-    sendingNFT.ChangeBelongingFungibleValue();
-
     senderWallet.AddTransaction(transactionInProgress.Id);
     receiverWallet.AddTransaction(transactionInProgress.Id);
 
@@ -343,6 +341,8 @@ bool HandleNonFungibleAssetTransaction(CryptoWallet senderWallet, CryptoWallet r
     (receiverWallet as CryptoAndNFTWallet).ReceiveNonFungibleAsset(sendingNFT.Address);
 
     allTransactions.Add(transactionInProgress);
+
+    sendingNFT.ChangeBelongingFungibleValue();
 
     return true;
 }
@@ -362,16 +362,18 @@ void Portfolio(CryptoWallet targetWallet)
 
         var values = targetWallet.CalculateFungibleAssetsValue(fungAssetObj);
 
+        var valueInUSD = double.Parse(values.usdValue.Replace("$", "").Trim());
+
+        fungAssetObj.AddPastValue(valueInUSD);
+
         fungibleAssetsTable.AddRow(
             fungAssetObj.Address,
             fungAssetObj.Name,
             fungAssetObj.Label,
             values.cryptoValue,
             values.usdValue,
-            fungAssetObj.CalculateValueChange(fungAssetObj.USDValue)
+            fungAssetObj.CalculateValueChange()
         );
-
-        fungAssetObj.AddPastValue(fungAssetObj.USDValue);
     }
 
     fungibleAssetsTable.Write(Format.Alternative);
@@ -388,19 +390,17 @@ void Portfolio(CryptoWallet targetWallet)
         var nonFungAssetObj = GlobalData.nonFungibleAssets.First(asset => asset.Address.Equals(nonFungAsset));
         var belongingFungAsset = GlobalData.fungibleAssets.First(asset => asset.Address.Equals(nonFungAssetObj.FungibleAsset));
 
-        var valueInCrypto = nonFungAssetObj.Value * belongingFungAsset.USDValue;
+        var valueInUSD = nonFungAssetObj.Value * belongingFungAsset.USDValue;
 
-        var valueUSD = 0;
+        nonFungAssetObj.AddPastValue(valueInUSD);
 
         nonFungibleAssetsTable.AddRow(
             nonFungAssetObj.Address,
             nonFungAssetObj.Name,
-            $"{valueInCrypto} {belongingFungAsset.Label}",
+            $"{nonFungAssetObj.Value} {belongingFungAsset.Label}",
             $"$ {nonFungAssetObj.GetValueInUSD()}",
-            nonFungAssetObj.CalculateValueChange(valueInCrypto)
+            nonFungAssetObj.CalculateValueChange()
         );
-
-        nonFungAssetObj.AddPastValue(valueUSD);
     }
 
     nonFungibleAssetsTable.Write(Format.Alternative);
