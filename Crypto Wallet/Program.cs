@@ -10,8 +10,9 @@ using Crypto_Wallet.Classes.Transactions;
 using Crypto_Wallet.Helpers;
 using System.Reflection;
 
-//initilize data and fill it with information
-var globalData = new GlobalData();
+//TODO wallet value change
+//TODO asset name for nunfungible should be the NFT name
+//TODO fungible support for solana and eth
 
 //list of all transactions
 var allTransactions = new List<Transaction>();
@@ -309,7 +310,27 @@ bool HandleFungibleAssetTransaction(CryptoWallet senderWallet, CryptoWallet rece
 
 bool HandleNonFungibleAssetTransaction(CryptoWallet senderWallet, CryptoWallet receiverWallet, NonFungibleAsset sendingNFT)
 {
-    if (!(receiverWallet as CryptoAndNFTWallet).GetSupportedNonFungibleAssets().Contains(sendingNFT.Address))
+    if (!receiverWallet.SupportsNFT())
+    {
+        Console.WriteLine("\nReceiving wallet doesn't support non fungible assets!");
+        return false;
+    }
+
+    var supportsAsset = receiverWallet.GetWalletType() == "SolanaWallet"
+        ? (receiverWallet as SolanaWallet).GetSupportedNonFungibleAssets().Contains(sendingNFT.Address)
+        : (receiverWallet as EthereumWallet).GetSupportedNonFungibleAssets().Contains(sendingNFT.Address);
+
+    foreach (var item in (receiverWallet as SolanaWallet).GetSupportedNonFungibleAssets())
+    {
+        Console.WriteLine("EXPLICIT: " + item);
+    }
+
+    foreach (var item in (receiverWallet as CryptoAndNFTWallet).GetSupportedNonFungibleAssets())
+    {
+        Console.WriteLine("NON EXPLICIT: " + item);
+    }
+
+    if (!supportsAsset)
     {
         Console.WriteLine("\nReceiving wallet doesn't support that asset type!");
         return false;

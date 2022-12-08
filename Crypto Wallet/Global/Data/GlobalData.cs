@@ -4,7 +4,7 @@ using Crypto_Wallet.Classes.Assets;
 
 namespace Crypto_Wallet.Global.Data
 {
-    public class GlobalData
+    public static class GlobalData
     {
         public static List<FungibleAsset> fungibleAssets = new List<FungibleAsset>()
         {
@@ -50,19 +50,23 @@ namespace Crypto_Wallet.Global.Data
             {
                 { fungibleAssets[0].Address, 2.1 },
                 { fungibleAssets[6].Address, 12.3 }
+            }, new List<Guid>(2)
+            {
+                fungibleAssets[0].Address,
+                fungibleAssets[6].Address
             }),
 
             new BitcoinWallet(new Dictionary<Guid, double>(2)
             {
                 { fungibleAssets[0].Address, 0 },
                 { fungibleAssets[6].Address, 2.3 }
-            }),
+            }, null),
 
             new BitcoinWallet(new Dictionary<Guid, double>(2)
             {
                 { fungibleAssets[0].Address, 5.6 },
                 { fungibleAssets[6].Address, 1.3 }
-            }),
+            }, null),
 
             new EthereumWallet(new Dictionary<Guid, double>(6)
             {
@@ -77,6 +81,30 @@ namespace Crypto_Wallet.Global.Data
                 nonFungibleAssets[10].Address,
                 nonFungibleAssets[14].Address,
                 nonFungibleAssets[11].Address
+            }, new List<Guid>(6)
+            {
+                fungibleAssets[1].Address,
+                fungibleAssets[3].Address,
+                fungibleAssets[4].Address,
+                fungibleAssets[5].Address,
+                fungibleAssets[6].Address,
+                fungibleAssets[9].Address
+            }, new List<Guid>(14)
+            {
+                nonFungibleAssets[0].Address,
+                nonFungibleAssets[1].Address,
+                nonFungibleAssets[2].Address,
+                nonFungibleAssets[3].Address,
+                nonFungibleAssets[4].Address,
+                nonFungibleAssets[5].Address,
+                nonFungibleAssets[10].Address,
+                nonFungibleAssets[11].Address,
+                nonFungibleAssets[12].Address,
+                nonFungibleAssets[13].Address,
+                nonFungibleAssets[14].Address,
+                nonFungibleAssets[15].Address,
+                nonFungibleAssets[16].Address,
+                nonFungibleAssets[19].Address
             }),
 
             new EthereumWallet(new Dictionary<Guid, double>(6)
@@ -90,7 +118,7 @@ namespace Crypto_Wallet.Global.Data
             }, new List<Guid>(2){
                 nonFungibleAssets[19].Address,
                 nonFungibleAssets[2].Address
-            }),
+            }, null, null),
 
             new EthereumWallet(new Dictionary<Guid, double>(6)
             {
@@ -107,7 +135,7 @@ namespace Crypto_Wallet.Global.Data
                 nonFungibleAssets[16].Address,
                 nonFungibleAssets[13].Address,
                 nonFungibleAssets[5].Address
-            }),
+            }, null, null),
 
             new SolanaWallet(new Dictionary<Guid, double>(4)
             {
@@ -117,6 +145,20 @@ namespace Crypto_Wallet.Global.Data
                 { fungibleAssets[8].Address, 34.7 }
             }, new List<Guid>(1)
             {
+                nonFungibleAssets[18].Address
+            }, new List<Guid>(4)
+            {
+                fungibleAssets[2].Address,
+                fungibleAssets[3].Address,
+                fungibleAssets[7].Address,
+                fungibleAssets[8].Address
+            }, new List<Guid>(6)
+            {
+                nonFungibleAssets[6].Address,
+                nonFungibleAssets[7].Address,
+                nonFungibleAssets[8].Address,
+                nonFungibleAssets[9].Address,
+                nonFungibleAssets[17].Address,
                 nonFungibleAssets[18].Address
             }),
 
@@ -131,7 +173,7 @@ namespace Crypto_Wallet.Global.Data
                 nonFungibleAssets[6].Address,
                 nonFungibleAssets[9].Address,
                 nonFungibleAssets[17].Address
-            }),
+            }, null, null),
 
             new SolanaWallet(new Dictionary<Guid, double>(4)
             {
@@ -143,64 +185,8 @@ namespace Crypto_Wallet.Global.Data
             {
                 nonFungibleAssets[7].Address,
                 nonFungibleAssets[8].Address
-            })
+            }, null, null)
         };
-
-
-        public GlobalData()
-        {
-            BitcoinWallet.AddSupportedFungibleAssets(new List<Guid>(2)
-            {
-                fungibleAssets[0].Address,
-                fungibleAssets[6].Address
-            });
-
-            EthereumWallet.AddSupportedFungibleAssets(new List<Guid>(6)
-            {
-                fungibleAssets[1].Address,
-                fungibleAssets[3].Address,
-                fungibleAssets[4].Address,
-                fungibleAssets[5].Address,
-                fungibleAssets[6].Address,
-                fungibleAssets[9].Address
-            });
-
-            EthereumWallet.AddSupportedNonFungibleAssets(new List<Guid>(14)
-            {
-                nonFungibleAssets[0].Address,
-                nonFungibleAssets[1].Address,
-                nonFungibleAssets[2].Address,
-                nonFungibleAssets[3].Address,
-                nonFungibleAssets[4].Address,
-                nonFungibleAssets[5].Address,
-                nonFungibleAssets[10].Address,
-                nonFungibleAssets[11].Address,
-                nonFungibleAssets[12].Address,
-                nonFungibleAssets[13].Address,
-                nonFungibleAssets[14].Address,
-                nonFungibleAssets[15].Address,
-                nonFungibleAssets[16].Address,
-                nonFungibleAssets[19].Address
-            });
-
-            SolanaWallet.AddSupportedFungibleAssets(new List<Guid>(4)
-            {
-                fungibleAssets[2].Address,
-                fungibleAssets[3].Address,
-                fungibleAssets[7].Address,
-                fungibleAssets[8].Address
-            });
-
-            SolanaWallet.AddSupportedNonFungibleAssets(new List<Guid>(6)
-            {
-                nonFungibleAssets[6].Address,
-                nonFungibleAssets[7].Address,
-                nonFungibleAssets[8].Address,
-                nonFungibleAssets[9].Address,
-                nonFungibleAssets[17].Address,
-                nonFungibleAssets[18].Address
-            });
-        }
     }
 }
 

@@ -7,7 +7,7 @@ namespace Crypto_Wallet.Classes
     {
         public SolanaWallet() : base() { }
 
-        public SolanaWallet(Dictionary<Guid, double> ownedFungibleAssets, List<Guid> ownedNonFungibleAssets) : base(ownedFungibleAssets, ownedNonFungibleAssets) { }
+        public SolanaWallet(Dictionary<Guid, double> ownedFungibleAssets, List<Guid> ownedNonFungibleAssets, List<Guid>? supportedFungibleAssets, List<Guid>? supportedNonFungableAssets) : base(ownedFungibleAssets, ownedNonFungibleAssets, supportedFungibleAssets, supportedNonFungableAssets) { }
     }
 }
 

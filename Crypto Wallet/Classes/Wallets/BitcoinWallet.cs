@@ -5,7 +5,7 @@ namespace Crypto_Wallet.Classes
 	{
         public BitcoinWallet() : base() { }
 
-        public BitcoinWallet(Dictionary<Guid, double> ownedFungibleAssets) : base(ownedFungibleAssets) { }
+        public BitcoinWallet(Dictionary<Guid, double> ownedFungibleAssets, List<Guid>? supportedFungibleAssets) : base(ownedFungibleAssets, supportedFungibleAssets) { }
 	}
 }
 

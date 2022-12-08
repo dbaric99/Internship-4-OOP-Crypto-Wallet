@@ -16,7 +16,9 @@ namespace Crypto_Wallet.Classes
 
 		public Dictionary<Guid, double> OwnedFungibleAssets { get; private set; } = new Dictionary<Guid, double>();
 
-		public static List<Guid> SupportedFungibleAssets { get; set; } = new List<Guid>();
+		//public static List<Guid> SupportedFungibleAssets { get; set; } = new List<Guid>();
+
+		public static Dictionary<string, List<Guid>> SupportedFungibleAssets { get; set; } = new Dictionary<string, List<Guid>>();
 
 		public List<Guid> Transactions { get; private set; } = new List<Guid>();
 
@@ -24,37 +26,34 @@ namespace Crypto_Wallet.Classes
 
 		#endregion
 
-		public CryptoWallet(Dictionary<Guid, double> ownedFungibleAssets)
+		public CryptoWallet(Dictionary<Guid, double> ownedFungibleAssets, List<Guid>? supportedFungibleAssets)
 		{
-			Address = Guid.NewGuid();
-			OwnedFungibleAssets = ownedFungibleAssets;
+            Address = Guid.NewGuid();
+            OwnedFungibleAssets = ownedFungibleAssets;
 
-			foreach (var ownedFung in ownedFungibleAssets)
-				OwnedFungibleAssets[ownedFung.Key] = ownedFung.Value;
+            foreach (var ownedFung in ownedFungibleAssets)
+                OwnedFungibleAssets[ownedFung.Key] = ownedFung.Value;
+			if(supportedFungibleAssets != null)
+				SupportedFungibleAssets[this.GetWalletType()] = supportedFungibleAssets;
 		}
 
 		public CryptoWallet()
 		{
 			Address = Guid.NewGuid();
 
-			foreach (var sfa in SupportedFungibleAssets)
+			foreach (var sfa in SupportedFungibleAssets[this.GetWalletType()])
 				OwnedFungibleAssets[sfa] = 0;
 		}
 
 		public List<Guid> GetSupportedFungibleAssets()
 		{
-			return SupportedFungibleAssets;
+			return SupportedFungibleAssets[this.GetWalletType()];
 
         }
 
-		public static void AddSupportedFungibleAssets(List<Guid> supportedFungAssets)
-		{
-			SupportedFungibleAssets.AddRange(supportedFungAssets);
-		}
-
 		public string GetWalletType()
 		{
-			return Regex.Replace(this.GetType().ToString().Replace(GeneralConstants.CLASS_PREFIX, ""), "[A-Z]", " $0");
+			return this.GetType().Name;
 		}
 
         public double CalculateFungibleValueInUSD()

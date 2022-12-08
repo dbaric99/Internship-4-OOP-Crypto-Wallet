@@ -11,7 +11,7 @@ namespace Crypto_Wallet.Classes.Wallets
 
         public List<Guid> OwnedNonFungibleAssets { get; set; } = new List<Guid>();
 
-        public static List<Guid> SupportedNonFungibleAssets { get; set; } = new List<Guid>();
+        public static Dictionary<string, List<Guid>> SupportedNonFungibleAssets { get; set; } = new Dictionary<string, List<Guid>>();
 
         #endregion
 
@@ -20,19 +20,17 @@ namespace Crypto_Wallet.Classes.Wallets
             
         }
 
-		public CryptoAndNFTWallet(Dictionary<Guid, double> ownedFungibleAssets, List<Guid> ownedNonFungibleAssets) : base(ownedFungibleAssets)
+		public CryptoAndNFTWallet(Dictionary<Guid, double> ownedFungibleAssets, List<Guid> ownedNonFungibleAssets, List<Guid>? supportedFungibleAssets, List<Guid>? supportedNonFungableAssets) : base(ownedFungibleAssets, supportedFungibleAssets)
 		{
 			OwnedNonFungibleAssets = ownedNonFungibleAssets;
-		}
 
-        public static void AddSupportedNonFungibleAssets(List<Guid> supportedNonFungAssets)
-        {
-            SupportedNonFungibleAssets.AddRange(supportedNonFungAssets);
-        }
+            if (supportedNonFungableAssets != null)
+                SupportedNonFungibleAssets[this.GetWalletType()] = supportedNonFungableAssets;
+		}
 
         public List<Guid> GetSupportedNonFungibleAssets()
         {
-            return SupportedNonFungibleAssets;
+            return SupportedNonFungibleAssets[this.GetWalletType()];
         }
 
         public double CalculateNonFungibleValueInUSD()
