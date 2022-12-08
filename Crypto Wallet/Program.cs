@@ -79,20 +79,37 @@ void WalletAccessSubmenu(CryptoWallet targetWallet)
     } while (walletAccessSubmenu != 0);
 }
 
-Asset GetAssetFromWalletByGuid(CryptoWallet wallet)
+bool Transfer(CryptoWallet senderWallet)
 {
-    var success = false;
+    CryptoWalletHelper.PrintAllWallets();
 
-    Console.Write("\nInput address of asset you are sending: ");
-    success = Guid.TryParse(Console.ReadLine(), out Guid assetAddress);
+    var receivingWallet = CryptoWalletHelper.GetWalletByAddress(MessageConstants.ACCESS_WALLET_TRANSFER_MESSAGE, MessageConstants.ACESS_WALLET_FAILED_MESSAGE);
 
-    if (!success)
+    if (receivingWallet == null) return false;
+
+    if (senderWallet.Equals(receivingWallet))
     {
-        Console.WriteLine("Input value needs to be a Guid!");
-        return null;
+        Console.WriteLine("\nSender and receiver wallet cannot be the same!");
+        return false;
     }
 
-    var asset = (Asset)(GlobalData.fungibleAssets.First(asset => asset.Address.Equals(assetAddress)) != null
+    Portfolio(senderWallet);
+
+    var assetToSend = GetAssetFromWalletByGuid(senderWallet);
+
+    if (assetToSend == null) return false;
+
+    if (assetToSend.GetType().Name == GeneralConstants.FUNGIBLE_ASSET_TYPE)
+        return HandleFungibleAssetTransaction(senderWallet, receivingWallet, (FungibleAsset)assetToSend);
+    else
+        return HandleNonFungibleAssetTransaction(senderWallet, receivingWallet, (NonFungibleAsset)assetToSend);
+}
+
+Asset GetAssetFromWalletByGuid(CryptoWallet wallet)
+{
+    var assetAddress = GeneralHelper.GetGuidFromUserInput(MessageConstants.ASSET_TO_TRANSFER_REQUEST_MESSAGE);
+
+    var asset = (Asset)(GlobalData.fungibleAssets.FirstOrDefault(asset => asset.Address.Equals(assetAddress)) != null
         ? GlobalData.fungibleAssets.FirstOrDefault(asset => asset.Address.Equals(assetAddress))
         : GlobalData.nonFungibleAssets.FirstOrDefault(asset => asset.Address.Equals(assetAddress)));
 
@@ -112,8 +129,7 @@ Asset GetAssetFromWalletByGuid(CryptoWallet wallet)
             }
         }
     }
-
-    if (!CryptoAndNFTWallet.SupportedNonFungibleAssets.Contains(assetAddress))
+    else if (!CryptoAndNFTWallet.SupportedNonFungibleAssets.Contains(assetAddress))
     {
         Console.WriteLine("\nAsset not supported!");
         Console.WriteLine("Supported assets for the wallet type are: ");
@@ -226,28 +242,6 @@ void RevokeTransaction(CryptoWallet senderWallet)
     }
 }
 
-bool Transfer(CryptoWallet senderWallet)
-{
-    var receivingWallet = CryptoWalletHelper.GetWalletByAddress(MessageConstants.ACCESS_WALLET_TRANSFER_MESSAGE, MessageConstants.ACESS_WALLET_FAILED_MESSAGE);
-
-    if (receivingWallet == null) return false;
-
-    if (senderWallet.Equals(receivingWallet))
-    {
-        Console.WriteLine("\nSender and receiver wallet cannot be the same!");
-        return false;
-    }
-
-    var assetToSend = GetAssetFromWalletByGuid(senderWallet);
-
-    if (assetToSend == null) return false;
-
-    if (assetToSend.GetType().BaseType.Name == GeneralConstants.FUNGIBLE_ASSET_TYPE)
-        return HandleFungibleAssetTransaction(senderWallet, receivingWallet, (FungibleAsset)assetToSend);
-    else
-        return HandleNonFungibleAssetTransaction(senderWallet, receivingWallet, (NonFungibleAsset)assetToSend);
-}
-
 bool HandleFungibleAssetTransaction(CryptoWallet senderWallet, CryptoWallet receiverWallet, FungibleAsset sendingCrypto)
 {
     //TODO check if wallets support the type
@@ -325,6 +319,7 @@ bool HandleNonFungibleAssetTransaction(CryptoWallet senderWallet, CryptoWallet r
     return true;
 }
 
+//TODO move to CryptoWallet and CryptoAndNFTWallet
 void Portfolio(CryptoWallet targetWallet)
 {
     Console.WriteLine($"All asset value: $ {CryptoWalletHelper.GetValueFromWalletByType(targetWallet)}");

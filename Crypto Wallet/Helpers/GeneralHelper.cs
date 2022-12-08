@@ -49,7 +49,7 @@ namespace Crypto_Wallet.Helpers
             var success = false;
 
             Console.Write(inputMessage);
-            success = Guid.TryParse(Console.ReadLine(), out Guid userInput);
+            success = Guid.TryParse(Console.ReadLine().Trim(), out Guid userInput);
 
             if (!success)
             {
