@@ -9,7 +9,10 @@ using Crypto_Wallet.Global.Data;
 using Crypto_Wallet.Classes.Transactions;
 using Crypto_Wallet.Helpers;
 
+//initilize data and fill it with information
 var globalData = new GlobalData();
+
+//list of all transactions
 var allTransactions = new List<Transaction>();
 
 //------ MAIN MENU ------
@@ -27,7 +30,7 @@ do
         case 2:
             Console.Clear();
             CryptoWalletHelper.PrintAllWallets();
-            var targetWallet = GetWalletByAddress(MessageConstants.ACCESS_WALLET_REQUEST_MESSAGE, MessageConstants.ACESS_WALLET_FAILED_MESSAGE);
+            var targetWallet = CryptoWalletHelper.GetWalletByAddress(MessageConstants.ACCESS_WALLET_REQUEST_MESSAGE, MessageConstants.ACESS_WALLET_FAILED_MESSAGE);
             if (targetWallet == null)
                 break;
             Console.Clear();
@@ -42,26 +45,38 @@ do
 
 } while (mainMenuChoice != 0);
 
-//------ ACCESS WALLET ------
-CryptoWallet GetWalletByAddress(string queryMessage, string rejectionMessage)
+//------ WALLET ACCESS SUBMENU ------
+
+void WalletAccessSubmenu(CryptoWallet targetWallet)
 {
-    var success = false;
+    var walletAccessSubmenu = 0;
 
-    Console.Write(queryMessage);
-    success = Guid.TryParse(Console.ReadLine(), out Guid walletAddress);
-
-    if (!success)
+    do
     {
-        Console.WriteLine("Input value needs to be a Guid!");
-        return null;
-    }
+        walletAccessSubmenu = GeneralHelper.GetMenuChoiceFromUser(MenuConstants.ACCESS_WALLET_MENU_TEXT, "Access Wallet");
 
-    var wallet = GlobalData.wallets.FirstOrDefault(wallet => wallet.Address.Equals(walletAddress));
+        switch (walletAccessSubmenu)
+        {
+            case 1:
+                Portfolio(targetWallet);
+                break;
+            case 2:
+                if (Transfer(targetWallet))
+                    Console.WriteLine("\nAsset transfer successful!");
+                else
+                    Console.WriteLine("\nAsset transfer failed!");
+                break;
+            case 3:
+                TransactionHistory(targetWallet);
+                break;
+            case 0:
+                return;
+            default:
+                Console.WriteLine("\nThere is no action for provided input!");
+                break;
+        }
 
-    if(wallet == null)
-        Console.WriteLine(rejectionMessage);
-
-    return wallet;
+    } while (walletAccessSubmenu != 0);
 }
 
 Asset GetAssetFromWalletByGuid(CryptoWallet wallet)
@@ -139,38 +154,6 @@ Transaction GetTransactionByGuid(CryptoWallet currentWallet)
     return transaction;
 }
 
-void WalletAccessSubmenu(CryptoWallet targetWallet)
-{
-    var walletAccessSubmenu = 0;
-
-    do
-    {
-        walletAccessSubmenu = GeneralHelper.GetMenuChoiceFromUser(MenuConstants.ACCESS_WALLET_MENU_TEXT, "Access Wallet");
-
-        switch (walletAccessSubmenu)
-        {
-            case 1:
-                Portfolio(targetWallet);
-                break;
-            case 2:
-                if(Transfer(targetWallet))
-                    Console.WriteLine("\nAsset transfer successful!");
-                else
-                    Console.WriteLine("\nAsset transfer failed!");
-                break;
-            case 3:
-                TransactionHistory(targetWallet);
-                break;
-            case 0:
-                return;
-            default:
-                Console.WriteLine("\nThere is no action for provided input!");
-                break;
-        }
-
-    } while (walletAccessSubmenu != 0);
-}
-
 void TransactionHistory(CryptoWallet targetWallet)
 {
     var transactionsForWallet = targetWallet.AllTransactionsOrderedByDate(allTransactions);
@@ -245,7 +228,7 @@ void RevokeTransaction(CryptoWallet senderWallet)
 
 bool Transfer(CryptoWallet senderWallet)
 {
-    var receivingWallet = GetWalletByAddress(MessageConstants.ACCESS_WALLET_TRANSFER_MESSAGE, MessageConstants.ACESS_WALLET_FAILED_MESSAGE);
+    var receivingWallet = CryptoWalletHelper.GetWalletByAddress(MessageConstants.ACCESS_WALLET_TRANSFER_MESSAGE, MessageConstants.ACESS_WALLET_FAILED_MESSAGE);
 
     if (receivingWallet == null) return false;
 
@@ -342,7 +325,6 @@ bool HandleNonFungibleAssetTransaction(CryptoWallet senderWallet, CryptoWallet r
     return true;
 }
 
-//TODO migrate to class? shorten
 void Portfolio(CryptoWallet targetWallet)
 {
     Console.WriteLine($"All asset value: $ {CryptoWalletHelper.GetValueFromWalletByType(targetWallet)}");

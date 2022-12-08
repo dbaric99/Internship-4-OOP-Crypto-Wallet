@@ -59,6 +59,18 @@ namespace Crypto_Wallet.Helpers
                     ? wallet.CalculateFungibleValueInUSD()
                     : ((CryptoAndNFTWallet)wallet).CalculateValueInUSD();
         }
+
+        public static CryptoWallet GetWalletByAddress(string queryMessage, string rejectionMessage)
+        {
+            var targetWalletAddress = GeneralHelper.GetGuidFromUserInput(queryMessage);
+
+            var wallet = GlobalData.wallets.FirstOrDefault(wallet => wallet.Address.Equals(targetWalletAddress));
+
+            if (wallet == null)
+                Console.WriteLine(rejectionMessage);
+
+            return wallet;
+        }
     }
 }
 

@@ -43,6 +43,22 @@ namespace Crypto_Wallet.Helpers
 
             return choice;
         }
+
+        public static Guid GetGuidFromUserInput(string inputMessage)
+        {
+            var success = false;
+
+            Console.Write(inputMessage);
+            success = Guid.TryParse(Console.ReadLine(), out Guid userInput);
+
+            if (!success)
+            {
+                Console.WriteLine("Input value need to be a guid!");
+                return Guid.Empty;
+            }
+
+            return userInput;
+        }
     }
 }
 
