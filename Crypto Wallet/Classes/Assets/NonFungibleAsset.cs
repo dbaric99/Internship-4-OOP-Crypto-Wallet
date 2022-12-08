@@ -20,10 +20,18 @@ namespace Crypto_Wallet.Classes.Assets
 			return this.Value * GlobalData.fungibleAssets.First(asset => asset.Address.Equals(this.FungibleAsset)).USDValue;
         }
 
-        public void ChangeBelongingFungibleValue(Guid nonFungAddress)
+		//TODO migrate
+        public void ChangeBelongingFungibleValue()
         {
-            //TODO
+			var nonFungAssetObj = GlobalData.nonFungibleAssets.First(asset => asset.Address.Equals(Address));
+
+			GlobalData.fungibleAssets.FirstOrDefault(asset => asset.Address.Equals(nonFungAssetObj.FungibleAsset)).ChangeAssetValue();
         }
+
+		public string GetFungibleAssetName()
+		{
+			return GlobalData.fungibleAssets.FirstOrDefault(asset => asset.Address.Equals(this.FungibleAsset))?.Name;
+		}
     }
 }
 

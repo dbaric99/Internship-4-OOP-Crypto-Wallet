@@ -120,6 +120,20 @@ namespace Crypto_Wallet.Classes
 		{
 			this.Transactions.Remove(transactionId);
 		}
+
+		public List<Transaction> AllTransactionsOrderedByDate(List<Transaction> allTransactions)
+		{
+			var transactions = new List<Transaction>();
+
+			foreach (var transactionId in Transactions)
+			{
+				var transactionObj = allTransactions.FirstOrDefault(trans => trans.Id.Equals(transactionId));
+
+				transactions.Add(transactionObj);
+			}
+
+			return transactions.OrderByDescending(trans => trans.Date).ToList<Transaction>();
+		}
     }
 }
 

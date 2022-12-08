@@ -1,4 +1,6 @@
 ﻿using System;
+using Crypto_Wallet.Global.Constants;
+
 namespace Crypto_Wallet.Classes.Transactions
 {
 	public class Transaction
@@ -16,6 +18,12 @@ namespace Crypto_Wallet.Classes.Transactions
 			Sender = senderAddress;
 			Receiver = receiverAddress;
 		}
-	}
+
+        public bool IsNonFungible()
+        {
+			return this.GetType().BaseType.Name == GeneralConstants.NONFUNGIBLE_TRANSACTION_TYPE;
+
+        }
+    }
 }
 

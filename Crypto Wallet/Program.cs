@@ -187,6 +187,7 @@ void WalletAccessSubmenu(CryptoWallet targetWallet)
                     Console.WriteLine("\nAsset transfer failed!");
                 break;
             case 3:
+                TransactionHistory(targetWallet);
                 break;
             case 0:
                 return;
@@ -196,6 +197,51 @@ void WalletAccessSubmenu(CryptoWallet targetWallet)
         }
 
     } while (walletAccessSubmenu != 0);
+}
+
+void TransactionHistory(CryptoWallet targetWallet)
+{
+    var transactionsForWallet = targetWallet.AllTransactionsOrderedByDate(allTransactions);
+
+    PrintGeneralSectionSeparator("Transaction history");
+    var transactionTable = new ConsoleTable("Transaction Id", "Date and time", "Sending wallet address", "Receiving wallet address", "Amount (fungible)", "Asset name", "Revoked");
+
+    foreach (var trans in transactionsForWallet)
+    {
+        if (!trans.IsNonFungible())
+        {
+            transactionTable.AddRow(
+                trans.Id,
+                trans.Date,
+                trans.Sender,
+                trans.Receiver,
+                (trans as FungibleAssetTransaction).SenderEndBalance - (trans as FungibleAssetTransaction).SenderStartBalance,
+                "-",
+                trans.isRevoked
+            );
+        }
+        else
+        {
+            transactionTable.AddRow(
+            trans.Id,
+            trans.Date,
+            trans.Sender,
+            trans.Receiver,
+            "-",
+            (trans as NonFungibleAssetTransaction).GetFungibleAssetInvolved(),
+            trans.isRevoked
+        );
+        }
+    }
+
+    transactionTable.Write(Format.Alternative);
+
+    RevokeTransaction();
+}
+
+void RevokeTransaction()
+{
+
 }
 
 bool Transfer(CryptoWallet senderWallet)
@@ -289,6 +335,8 @@ bool HandleNonFungibleAssetTransaction(CryptoWallet senderWallet, CryptoWallet r
 
     (senderWallet as CryptoAndNFTWallet).SendNonFungibleAsset(sendingNFT.Address);
     (receiverWallet as CryptoAndNFTWallet).ReceiveNonFungibleAsset(sendingNFT.Address);
+
+    sendingNFT.ChangeBelongingFungibleValue();
 
     return true;
 }
