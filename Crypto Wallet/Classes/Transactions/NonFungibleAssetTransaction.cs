@@ -12,7 +12,7 @@ namespace Crypto_Wallet.Classes.Transactions
 			NonFungibleAsset = nonFungibleAssetAddress;
 		}
 
-		public string GetFungibleAssetInvolved()
+		public override string GetFungibleAssetName()
 		{
 			return GlobalData.nonFungibleAssets.FirstOrDefault(asset => asset.Address.Equals(this.NonFungibleAsset)).GetFungibleAssetName();
 		}

@@ -186,8 +186,8 @@ void TransactionHistory(CryptoWallet targetWallet)
                 trans.Date,
                 trans.Sender,
                 trans.Receiver,
-                (trans as FungibleAssetTransaction).SenderEndBalance - (trans as FungibleAssetTransaction).SenderStartBalance,
-                "-",
+                (trans as FungibleAssetTransaction).SenderStartBalance - (trans as FungibleAssetTransaction).SenderEndBalance,
+                trans.GetFungibleAssetName(),
                 trans.isRevoked
             );
         }
@@ -199,7 +199,7 @@ void TransactionHistory(CryptoWallet targetWallet)
             trans.Sender,
             trans.Receiver,
             "-",
-            (trans as NonFungibleAssetTransaction).GetFungibleAssetInvolved(),
+            trans.GetFungibleAssetName(),
             trans.isRevoked
         );
         }

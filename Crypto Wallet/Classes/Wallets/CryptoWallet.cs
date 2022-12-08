@@ -18,7 +18,7 @@ namespace Crypto_Wallet.Classes
 
 		public static List<Guid> SupportedFungibleAssets { get; set; } = new List<Guid>();
 
-        public List<Guid> Transactions { get; private set; }
+		public List<Guid> Transactions { get; private set; } = new List<Guid>();
 
 		public List<double> Values { get; private set; } = new List<double>();
 
@@ -33,7 +33,6 @@ namespace Crypto_Wallet.Classes
 				OwnedFungibleAssets[ownedFung.Key] = ownedFung.Value;
         }
 
-		//TODO
 		public CryptoWallet()
 		{
 			Address = Guid.NewGuid();
@@ -75,11 +74,8 @@ namespace Crypto_Wallet.Classes
 		{
 			if (!this.Values.Any() || this.Values.Last() == newValue)
 				return "0%";
-            
-            else if (newValue > this.Values.Last())
-				return $"+{(this.Values.Last() / newValue) * 100}%";
 
-			return $"-{(newValue / this.Values.Last()) * 100}%";
+			return $"{Math.Round(((newValue - this.Values.Last()) / this.Values.Last()) * 100, 2)}%";
 		}
 
 		public (string cryptoValue, string usdValue) CalculateFungibleAssetsValue(FungibleAsset targetFungAsset)
@@ -125,7 +121,7 @@ namespace Crypto_Wallet.Classes
 		{
 			var transactions = new List<Transaction>();
 
-			foreach (var transactionId in Transactions)
+			foreach (var transactionId in this.Transactions)
 			{
 				var transactionObj = allTransactions.FirstOrDefault(trans => trans.Id.Equals(transactionId));
 

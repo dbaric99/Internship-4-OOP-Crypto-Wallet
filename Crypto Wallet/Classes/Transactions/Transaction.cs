@@ -29,6 +29,11 @@ namespace Crypto_Wallet.Classes.Transactions
 		{
 			this.isRevoked = true;
 		}
+
+		public virtual string GetFungibleAssetName()
+		{
+			return String.Empty;
+		}
     }
 }
 

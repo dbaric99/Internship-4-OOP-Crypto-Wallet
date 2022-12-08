@@ -24,10 +24,7 @@ namespace Crypto_Wallet.Classes
             if (!this.PastValues.Any() || this.PastValues.Last() == newValue)
                 return "0%";
 
-            if (newValue > this.PastValues.Last())
-                return $"+{(this.PastValues.Last() / newValue) * 100}%";
-
-            return $"-{(newValue / this.PastValues.Last()) * 100}%";
+            return $"{Math.Round(((newValue - this.PastValues.Last()) / this.PastValues.Last()) * 100, 2)}%";
         }
     }
 }

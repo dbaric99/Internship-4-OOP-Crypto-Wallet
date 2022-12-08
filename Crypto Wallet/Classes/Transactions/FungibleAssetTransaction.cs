@@ -1,4 +1,6 @@
 ﻿using System;
+using Crypto_Wallet.Global.Data;
+
 namespace Crypto_Wallet.Classes.Transactions
 {
 	public class FungibleAssetTransaction : Transaction
@@ -17,6 +19,11 @@ namespace Crypto_Wallet.Classes.Transactions
 			ReceiverStartBalance = receiverStartBalance;
 			ReceiverEndBalance = receiverEndBalance;
 		}
-	}
+
+        public override string GetFungibleAssetName()
+        {
+			return GlobalData.fungibleAssets.FirstOrDefault(asset => asset.Address.Equals(this.FungibleAsset)).Name;
+        }
+    }
 }
 

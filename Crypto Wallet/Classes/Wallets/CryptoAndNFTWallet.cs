@@ -8,7 +8,7 @@ namespace Crypto_Wallet.Classes.Wallets
 	public abstract class CryptoAndNFTWallet : CryptoWallet, INonFungible
 	{
         #region Properties
-        //TODO check references
+
         public List<Guid> OwnedNonFungibleAssets { get; set; } = new List<Guid>();
 
         public static List<Guid> SupportedNonFungibleAssets { get; set; } = new List<Guid>();
