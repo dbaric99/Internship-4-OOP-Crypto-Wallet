@@ -92,7 +92,7 @@ namespace Crypto_Wallet.Classes
 
 		public bool SupportsNFT()
 		{
-			return this.GetType().BaseType.Name == GeneralConstants.MAIN_TYPE;
+			return this.GetType().BaseType.Name != GeneralConstants.MAIN_TYPE;
         }
 
 		public double GetFungibleValue(Guid fungibleAssetAddress)

@@ -167,6 +167,33 @@ Asset GetAssetFromWalletByGuid(CryptoWallet wallet)
     return asset;
 }
 
+Transaction GetTransactionByGuid(CryptoWallet currentWallet)
+{
+    var success = false;
+
+    Console.Write("\nInput id of transaction you wish to revoke: ");
+    success = Guid.TryParse(Console.ReadLine(), out Guid transactionId);
+
+    if (!success)
+    {
+        Console.WriteLine("Input value needs to be a Guid!");
+        return null;
+    }
+
+    var transaction = allTransactions.FirstOrDefault(trans => trans.Id.Equals(transactionId));
+
+    if (transaction == null)
+        Console.WriteLine("\nThere is no transaction by the required id!");
+
+    else if (currentWallet.Transactions.FirstOrDefault(trans => trans.Equals(transaction.Id)) == null)
+    {
+        Console.WriteLine("\nYou cannot revoke a transaction that you didn't create!");
+        return null;
+    }
+
+    return transaction;
+}
+
 void WalletAccessSubmenu(CryptoWallet targetWallet)
 {
     var walletAccessSubmenu = 0;
@@ -236,17 +263,46 @@ void TransactionHistory(CryptoWallet targetWallet)
 
     transactionTable.Write(Format.Alternative);
 
-    RevokeTransaction();
+    RevokeTransaction(targetWallet);
 }
 
-void RevokeTransaction()
+void RevokeTransaction(CryptoWallet senderWallet)
 {
+    var transaction = GetTransactionByGuid(senderWallet);
 
+    if (transaction == null) return;
+
+    if(transaction.isRevoked == true)
+    {
+        Console.WriteLine("\nThis transaction is already revoked!");
+        return;
+    }
+
+    if(DateTime.Now.Subtract(transaction.Date).Seconds > 45)
+    {
+        Console.WriteLine("\nYou cannot revoke a transaction that is created more than 45 seconds ago!");
+        return;
+    }
+
+    transaction.Revoke();
+
+    if (!transaction.IsNonFungible())
+    {
+        senderWallet.FungibleValueManipulation((transaction as FungibleAssetTransaction).FungibleAsset, (transaction as FungibleAssetTransaction).ReceiverStartBalance - (transaction as FungibleAssetTransaction).ReceiverEndBalance, true);
+
+        var receivingWallet = GlobalData.wallets.First(wallet => wallet.Address.Equals(transaction.Receiver));
+
+        receivingWallet.FungibleValueManipulation((transaction as FungibleAssetTransaction).FungibleAsset, (transaction as FungibleAssetTransaction).ReceiverStartBalance - (transaction as FungibleAssetTransaction).ReceiverEndBalance, false);
+
+        return;
+    }
 }
 
 bool Transfer(CryptoWallet senderWallet)
 {
     var receivingWallet = GetWalletByAddress(MessageConstants.ACCESS_WALLET_TRANSFER_MESSAGE, MessageConstants.ACESS_WALLET_FAILED_MESSAGE);
+
+    if (receivingWallet == null) return false;
 
     if (senderWallet.Equals(receivingWallet))
     {
@@ -426,7 +482,7 @@ int GetMenuChoiceFromUser(string menuText, string menuTitle)
     return choice;
 }
 
-
+//TODO user input guid
 
 bool ConfirmChoice(string message = "Are you sure?")
 {
