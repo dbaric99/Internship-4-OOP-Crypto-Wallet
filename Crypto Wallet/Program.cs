@@ -120,13 +120,11 @@ Asset GetAssetFromWalletByGuid(CryptoWallet wallet)
 
     if (!wallet.SupportsNFT())
     {
-        var supportedAssets = (List<Guid>)wallet.GetType().GetProperty("SupportedFungibleAssets", BindingFlags.Static).GetValue(null, null);
-
-        if (!supportedAssets.Contains(assetAddress))
+        if (!wallet.GetSupportedFungibleAssets().Contains(assetAddress))
         {
             Console.WriteLine("\nAsset not supported!");
             Console.WriteLine("Supported assets for the wallet type are: ");
-            foreach (var fungAsset in supportedAssets)
+            foreach (var fungAsset in wallet.GetSupportedFungibleAssets())
             {
                 Console.WriteLine($"\t{fungAsset} - {GlobalData.fungibleAssets.FirstOrDefault(asset => asset.Address.Equals(fungAsset)).Name}");
                 return null;
@@ -135,25 +133,21 @@ Asset GetAssetFromWalletByGuid(CryptoWallet wallet)
     }
     else
     {
-        var supportedFungibleAssets = (List<Guid>)wallet.GetType().GetProperty("SupportedFungibleAssets", BindingFlags.Static).GetValue(null,null);
-
-        var supportedNonFungibleAssets = (List<Guid>)wallet.GetType().GetProperty("SupportedNonFungibleAssets", BindingFlags.Static).GetValue(null, null);
-
-        if (!supportedFungibleAssets.Contains(assetAddress) && asset.GetType().Name == GeneralConstants.FUNGIBLE_ASSET_TYPE)
+        if (!wallet.GetSupportedFungibleAssets().Contains(assetAddress) && asset.GetType().Name == GeneralConstants.FUNGIBLE_ASSET_TYPE)
         {
             Console.WriteLine("\nAsset not supported!");
             Console.WriteLine("Supported assets for the wallet type are: ");
-            foreach (var fungAsset in supportedFungibleAssets)
+            foreach (var fungAsset in wallet.GetSupportedFungibleAssets())
             {
                 Console.WriteLine($"\t{fungAsset} - {GlobalData.fungibleAssets.FirstOrDefault(asset => asset.Address.Equals(fungAsset)).Name}");
                 return null;
             }
         }
-        else if (!supportedNonFungibleAssets.Contains(assetAddress) && !(asset.GetType().Name == GeneralConstants.FUNGIBLE_ASSET_TYPE))
+        else if (!(wallet as CryptoAndNFTWallet).GetSupportedNonFungibleAssets().Contains(assetAddress) && !(asset.GetType().Name == GeneralConstants.FUNGIBLE_ASSET_TYPE))
         {
             Console.WriteLine("\nAsset not supported!");
             Console.WriteLine("Supported assets for the wallet type are: ");
-            foreach (var nonFungAsset in supportedNonFungibleAssets)
+            foreach (var nonFungAsset in (wallet as CryptoAndNFTWallet).GetSupportedNonFungibleAssets())
             {
                 Console.WriteLine($"\t{nonFungAsset} - {GlobalData.nonFungibleAssets.FirstOrDefault(asset => asset.Address.Equals(nonFungAsset)).Name}");
                 return null;
@@ -215,14 +209,14 @@ void TransactionHistory(CryptoWallet targetWallet)
         else
         {
             transactionTable.AddRow(
-            trans.Id,
-            trans.Date,
-            trans.Sender,
-            trans.Receiver,
-            "-",
-            trans.GetFungibleAssetName(),
-            trans.isRevoked
-        );
+                trans.Id,
+                trans.Date,
+                trans.Sender,
+                trans.Receiver,
+                "-",
+                trans.GetFungibleAssetName(),
+                trans.isRevoked
+            );
         }
     }
 
@@ -267,9 +261,7 @@ void RevokeTransaction(CryptoWallet senderWallet)
 
 bool HandleFungibleAssetTransaction(CryptoWallet senderWallet, CryptoWallet receiverWallet, FungibleAsset sendingCrypto)
 {
-    var receiverSupported = (List<Guid>)receiverWallet.GetType().GetProperty("SupportedFungibleAsssets", BindingFlags.Static).GetValue(null, null);
-
-    if(!receiverSupported.Contains(sendingCrypto.Address))
+    if(!receiverWallet.GetSupportedFungibleAssets().Contains(sendingCrypto.Address))
     {
         Console.WriteLine("\nReceiving wallet doesn't support that asset type!");
         return false;
@@ -317,9 +309,7 @@ bool HandleFungibleAssetTransaction(CryptoWallet senderWallet, CryptoWallet rece
 
 bool HandleNonFungibleAssetTransaction(CryptoWallet senderWallet, CryptoWallet receiverWallet, NonFungibleAsset sendingNFT)
 {
-    var receiverSupported = (List<Guid>)receiverWallet.GetType().GetProperty("SupportedNonFungibleAsssets", BindingFlags.Static).GetValue(null, null);
-
-    if (!receiverSupported.Contains(sendingNFT.Address))
+    if (!(receiverWallet as CryptoAndNFTWallet).GetSupportedNonFungibleAssets().Contains(sendingNFT.Address))
     {
         Console.WriteLine("\nReceiving wallet doesn't support that asset type!");
         return false;
@@ -344,13 +334,15 @@ bool HandleNonFungibleAssetTransaction(CryptoWallet senderWallet, CryptoWallet r
     //TODO migrate
     var transactionInProgress = new NonFungibleAssetTransaction(senderWallet.Address, receiverWallet.Address, sendingNFT.Address);
 
+    sendingNFT.ChangeBelongingFungibleValue();
+
     senderWallet.AddTransaction(transactionInProgress.Id);
     receiverWallet.AddTransaction(transactionInProgress.Id);
 
     (senderWallet as CryptoAndNFTWallet).SendNonFungibleAsset(sendingNFT.Address);
     (receiverWallet as CryptoAndNFTWallet).ReceiveNonFungibleAsset(sendingNFT.Address);
 
-    sendingNFT.ChangeBelongingFungibleValue();
+    allTransactions.Add(transactionInProgress);
 
     return true;
 }

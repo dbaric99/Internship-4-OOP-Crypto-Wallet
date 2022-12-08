@@ -10,9 +10,9 @@ namespace Crypto_Wallet.Classes
 {
 	public abstract class CryptoWallet : IFungible
 	{
-        #region Properties
+		#region Properties
 
-        public Guid Address { get; }
+		public Guid Address { get; }
 
 		public Dictionary<Guid, double> OwnedFungibleAssets { get; private set; } = new Dictionary<Guid, double>();
 
@@ -22,24 +22,30 @@ namespace Crypto_Wallet.Classes
 
 		public List<double> Values { get; private set; } = new List<double>();
 
-        #endregion
+		#endregion
 
-        public CryptoWallet(Dictionary<Guid, double> ownedFungibleAssets)
+		public CryptoWallet(Dictionary<Guid, double> ownedFungibleAssets)
 		{
 			Address = Guid.NewGuid();
 			OwnedFungibleAssets = ownedFungibleAssets;
 
 			foreach (var ownedFung in ownedFungibleAssets)
 				OwnedFungibleAssets[ownedFung.Key] = ownedFung.Value;
-        }
+		}
 
 		public CryptoWallet()
 		{
 			Address = Guid.NewGuid();
 
 			foreach (var sfa in SupportedFungibleAssets)
-                OwnedFungibleAssets[sfa] = 0;
+				OwnedFungibleAssets[sfa] = 0;
 		}
+
+		public List<Guid> GetSupportedFungibleAssets()
+		{
+			return SupportedFungibleAssets;
+
+        }
 
 		public static void AddSupportedFungibleAssets(List<Guid> supportedFungAssets)
 		{
@@ -128,7 +134,7 @@ namespace Crypto_Wallet.Classes
 				transactions.Add(transactionObj);
 			}
 
-			return transactions.OrderByDescending(trans => trans.Date).ToList<Transaction>();
+			return transactions.OrderByDescending(trans => trans.Date).ToList();
 		}
     }
 }

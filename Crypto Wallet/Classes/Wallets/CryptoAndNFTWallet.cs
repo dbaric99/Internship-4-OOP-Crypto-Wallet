@@ -30,6 +30,11 @@ namespace Crypto_Wallet.Classes.Wallets
             SupportedNonFungibleAssets.AddRange(supportedNonFungAssets);
         }
 
+        public List<Guid> GetSupportedNonFungibleAssets()
+        {
+            return SupportedNonFungibleAssets;
+        }
+
         public double CalculateNonFungibleValueInUSD()
         {
             var value = 0d;
