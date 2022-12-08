@@ -13,7 +13,7 @@ namespace Crypto_Wallet.Classes
         #region Properties
 
         public Guid Address { get; }
-		//TODO check references
+
 		public Dictionary<Guid, double> OwnedFungibleAssets { get; private set; } = new Dictionary<Guid, double>();
 
 		public static List<Guid> SupportedFungibleAssets { get; set; } = new List<Guid>();
@@ -39,7 +39,7 @@ namespace Crypto_Wallet.Classes
 			Address = Guid.NewGuid();
 
 			foreach (var sfa in SupportedFungibleAssets)
-				OwnedFungibleAssets.Add(sfa, 0);
+                OwnedFungibleAssets[sfa] = 0;
 		}
 
 		public static void AddSupportedFungibleAssets(List<Guid> supportedFungAssets)

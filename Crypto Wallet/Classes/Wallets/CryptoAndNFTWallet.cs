@@ -17,9 +17,7 @@ namespace Crypto_Wallet.Classes.Wallets
 
         public CryptoAndNFTWallet() : base()
 		{
-            OwnedNonFungibleAssets = new List<Guid>();
-            foreach (var supportedNonFungAsset in SupportedNonFungibleAssets)
-                OwnedNonFungibleAssets.Add(supportedNonFungAsset);
+            
         }
 
 		public CryptoAndNFTWallet(Dictionary<Guid, double> ownedFungibleAssets, List<Guid> ownedNonFungibleAssets) : base(ownedFungibleAssets)

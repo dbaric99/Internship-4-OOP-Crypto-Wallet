@@ -7,6 +7,7 @@ using Crypto_Wallet.Interfaces;
 using Crypto_Wallet.Global.Constants;
 using Crypto_Wallet.Global.Data;
 using Crypto_Wallet.Classes.Transactions;
+using Crypto_Wallet.Helpers;
 
 var globalData = new GlobalData();
 var allTransactions = new List<Transaction>();
@@ -16,16 +17,16 @@ var mainMenuChoice = 0;
 
 do
 {
-    mainMenuChoice = GetMenuChoiceFromUser(MenuConstants.MAIN_MENU_TEXT, "Main Menu");
+    mainMenuChoice = GeneralHelper.GetMenuChoiceFromUser(MenuConstants.MAIN_MENU_TEXT, "Main Menu");
 
     switch (mainMenuChoice)
     {
         case 1:
-            CreateNewCryptoWallet();
+            CryptoWalletHelper.CreateNewCryptoWallet();
             break;
         case 2:
             Console.Clear();
-            PrintAllWallets();
+            CryptoWalletHelper.PrintAllWallets();
             var targetWallet = GetWalletByAddress(MessageConstants.ACCESS_WALLET_REQUEST_MESSAGE, MessageConstants.ACESS_WALLET_FAILED_MESSAGE);
             if (targetWallet == null)
                 break;
@@ -41,63 +42,7 @@ do
 
 } while (mainMenuChoice != 0);
 
-//------ NEW CRYPTO WALLET ------
-void CreateNewCryptoWallet()
-{
-    Console.Clear();
-
-    PrintGeneralSectionSeparator("Create Wallet");
-    Console.Write("Available wallets to create: Bitcoin, Ethereum or Solana\n"
-        + "Enter the type of wallet you want to create: ");
-
-    var wantedWallet = CapitalizeAndTrim(Console.ReadLine()) + "Wallet";
-
-    Console.WriteLine("WANTED: " + wantedWallet);
-
-    if(!Enum.IsDefined(typeof(CryptoWalletTypes), wantedWallet))
-    {
-        Console.WriteLine("\nWrong input for wallet type! Wallet can be of types:  Bitcoin, Ethereum or Solana");
-        return;
-    }
-
-    Type walletType = Type.GetType(GeneralConstants.CLASS_PREFIX + wantedWallet);
-
-    if (ConfirmChoice($"Are you sure you want to add new wallet of type {wantedWallet}?"))
-        GlobalData.wallets.Add(Activator.CreateInstance(walletType) as CryptoWallet);
-}
-
 //------ ACCESS WALLET ------
-void PrintAllWallets()
-{
-    //TODO migrate to class
-    var table = new ConsoleTable("Wallet Type", "Wallet Address", "USD Asset Value", "Value Change");
-
-    foreach (var wallet in GlobalData.wallets)
-    {
-        var value = GetValueFromWalletByType(wallet);
-
-        table.AddRow(
-            wallet.GetWalletType(),
-            wallet.Address,
-            $"$ {value}",
-            wallet.GetValueChange(value)
-        );
-
-        wallet.AddValue(value);
-    }
-
-    table.Write(Format.Alternative);
-    Console.WriteLine(GlobalData.wallets[0].Address);
-    Console.WriteLine(GlobalData.wallets[4].Address);
-}
-
-double GetValueFromWalletByType(CryptoWallet wallet)
-{
-    return !wallet.SupportsNFT()
-            ? wallet.CalculateFungibleValueInUSD()
-            : ((CryptoAndNFTWallet)wallet).CalculateValueInUSD();
-}
-
 CryptoWallet GetWalletByAddress(string queryMessage, string rejectionMessage)
 {
     var success = false;
@@ -200,7 +145,7 @@ void WalletAccessSubmenu(CryptoWallet targetWallet)
 
     do
     {
-        walletAccessSubmenu = GetMenuChoiceFromUser(MenuConstants.ACCESS_WALLET_MENU_TEXT, "Access Wallet");
+        walletAccessSubmenu = GeneralHelper.GetMenuChoiceFromUser(MenuConstants.ACCESS_WALLET_MENU_TEXT, "Access Wallet");
 
         switch (walletAccessSubmenu)
         {
@@ -230,7 +175,7 @@ void TransactionHistory(CryptoWallet targetWallet)
 {
     var transactionsForWallet = targetWallet.AllTransactionsOrderedByDate(allTransactions);
 
-    PrintGeneralSectionSeparator("Transaction history");
+    GeneralHelper.PrintGeneralSectionSeparator("Transaction history");
     var transactionTable = new ConsoleTable("Transaction Id", "Date and time", "Sending wallet address", "Receiving wallet address", "Amount (fungible)", "Asset name", "Revoked");
 
     foreach (var trans in transactionsForWallet)
@@ -340,7 +285,7 @@ bool HandleFungibleAssetTransaction(CryptoWallet senderWallet, CryptoWallet rece
         return false;
     }
 
-    if (!ConfirmChoice(MessageConstants.TRANSACTION_CONFORMATION_MESSAGE))
+    if (!GeneralHelper.ConfirmChoice(MessageConstants.TRANSACTION_CONFORMATION_MESSAGE))
         return false;
 
     //TODO maybe add this logic to the class when adding new transaction
@@ -400,10 +345,10 @@ bool HandleNonFungibleAssetTransaction(CryptoWallet senderWallet, CryptoWallet r
 //TODO migrate to class? shorten
 void Portfolio(CryptoWallet targetWallet)
 {
-    Console.WriteLine($"All asset value: $ {GetValueFromWalletByType(targetWallet)}");
+    Console.WriteLine($"All asset value: $ {CryptoWalletHelper.GetValueFromWalletByType(targetWallet)}");
 
     //------FUNGIBLE ASSETS ------
-    PrintGeneralSectionSeparator("Fungible Assets");
+    GeneralHelper.PrintGeneralSectionSeparator("Fungible Assets");
     var fungibleAssetsTable = new ConsoleTable("Address", "Name", "Label", "Value (crypto)", "Total Value (USD)", "Value Change");
 
     foreach (var fungAsset in targetWallet.OwnedFungibleAssets)
@@ -430,7 +375,7 @@ void Portfolio(CryptoWallet targetWallet)
         return;
 
     //------NON FUNGIBLE ASSETS ------
-    PrintGeneralSectionSeparator("Non Fungible Assets");
+    GeneralHelper.PrintGeneralSectionSeparator("Non Fungible Assets");
     var nonFungibleAssetsTable = new ConsoleTable("Address", "Name", "Value (crypto)", "Total Value (USD)", "Value Change");
 
     foreach (var nonFungAsset in (targetWallet as CryptoAndNFTWallet).OwnedNonFungibleAssets)
@@ -455,51 +400,5 @@ void Portfolio(CryptoWallet targetWallet)
 
     nonFungibleAssetsTable.Write(Format.Alternative);
 }
-
-//------ HELPER FUNCTIONS ------
-#region Helpers
-int GetMenuChoiceFromUser(string menuText, string menuTitle)
-{
-    var success = false;
-    var choice = 0;
-
-    do
-    {
-        PrintGeneralSectionSeparator(menuTitle);
-
-        Console.WriteLine(menuText);
-        Console.Write("Input your choice: ");
-        success = int.TryParse(Console.ReadLine(), out choice);
-
-        if (!success)
-        {
-            Console.Clear();
-            Console.WriteLine("Value must be a number!\n");
-        }
-
-    } while (!success);
-
-    return choice;
-}
-
-//TODO user input guid
-
-bool ConfirmChoice(string message = "Are you sure?")
-{
-    Console.Write($"\n{message} (y/n): ");
-    return Console.ReadLine().Trim().ToLower() == "y";
-}
-
-void PrintGeneralSectionSeparator(string text)
-{
-    Console.WriteLine($"\n<<<---------- {text} ---------->>>\n");
-}
-
-string CapitalizeAndTrim(string input)
-{
-    input = input.Trim().ToLower();
-    return input.First().ToString().ToUpper() + String.Join("", input.Skip(1));
-}
-#endregion
 
 Console.ReadKey();
