@@ -1,5 +1,4 @@
-﻿using System;
-using Crypto_Wallet.Global.Data;
+﻿using Crypto_Wallet.Global.Data;
 
 namespace Crypto_Wallet.Classes.Transactions
 {

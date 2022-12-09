@@ -1,5 +1,4 @@
-﻿using System;
-namespace Crypto_Wallet.Global.Constants
+﻿namespace Crypto_Wallet.Global.Constants
 {
 	public static class MessageConstants
 	{
@@ -12,6 +11,8 @@ namespace Crypto_Wallet.Global.Constants
         public const string TRANSACTION_CONFORMATION_MESSAGE = "\nAre you sure you want to transfer assets to another account?";
 
         public const string ASSET_TO_TRANSFER_REQUEST_MESSAGE = "\nInput address of asset you are sending: ";
+
+        public const string TRANSACTION_ID_REQUEST_MESSAGE = "\nInput id of transaction you wish to revoke: ";
     }
 }
 

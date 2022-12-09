@@ -1,5 +1,4 @@
-﻿using System;
-namespace Crypto_Wallet.Global.Constants
+﻿namespace Crypto_Wallet.Global.Constants
 {
 	public static class MenuConstants
 	{

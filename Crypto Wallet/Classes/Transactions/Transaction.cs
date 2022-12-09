@@ -1,17 +1,22 @@
-﻿using System;
-using Crypto_Wallet.Global.Constants;
+﻿using Crypto_Wallet.Global.Constants;
 
 namespace Crypto_Wallet.Classes.Transactions
 {
 	public class Transaction
 	{
-		public Guid Id { get; }
-		public DateTime Date { get; }
-		public Guid Sender { get; }
-		public Guid Receiver { get; }
-		public bool isRevoked { get; private set; }
+        #region Properties
+        public Guid Id { get; }
 
-		public Transaction(Guid senderAddress, Guid receiverAddress)
+		public DateTime Date { get; }
+
+		public Guid Sender { get; }
+
+		public Guid Receiver { get; }
+
+		public bool isRevoked { get; private set; }
+        #endregion
+
+        public Transaction(Guid senderAddress, Guid receiverAddress)
 		{
 			Id = Guid.NewGuid();
 			Date = DateTime.Now;

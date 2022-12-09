@@ -1,5 +1,4 @@
-﻿using System;
-using Crypto_Wallet.Classes.Wallets;
+﻿using Crypto_Wallet.Classes.Wallets;
 
 namespace Crypto_Wallet.Classes
 {

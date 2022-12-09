@@ -1,4 +1,5 @@
-﻿using Crypto_Wallet.Classes;
+﻿#region Dependencies
+using Crypto_Wallet.Classes;
 using Crypto_Wallet.Classes.Wallets;
 using Crypto_Wallet.Classes.Assets;
 using Crypto_Wallet.Enums;
@@ -8,7 +9,7 @@ using Crypto_Wallet.Global.Constants;
 using Crypto_Wallet.Global.Data;
 using Crypto_Wallet.Classes.Transactions;
 using Crypto_Wallet.Helpers;
-using System.Reflection;
+#endregion
 
 //list of all transactions
 var allTransactions = new List<Transaction>();
@@ -103,7 +104,6 @@ bool Transfer(CryptoWallet senderWallet)
         return HandleNonFungibleAssetTransaction(senderWallet, receivingWallet, (NonFungibleAsset)assetToSend);
 }
 
-//TODO optimize
 Asset GetAssetFromWalletByGuid(CryptoWallet wallet)
 {
     var assetAddress = GeneralHelper.GetGuidFromUserInput(MessageConstants.ASSET_TO_TRANSFER_REQUEST_MESSAGE);
@@ -133,7 +133,7 @@ Asset GetAssetFromWalletByGuid(CryptoWallet wallet)
         if (!wallet.GetSupportedFungibleAssets().Contains(assetAddress) && asset.GetType().Name == GeneralConstants.FUNGIBLE_ASSET_TYPE)
         {
             Console.WriteLine("\nAsset not supported!");
-            Console.WriteLine("Supported assets for the wallet type are: ");
+            Console.WriteLine("Supported fungible assets for the wallet type are: ");
             foreach (var fungAsset in wallet.GetSupportedFungibleAssets())
             {
                 Console.WriteLine($"\t{fungAsset} - {GlobalData.fungibleAssets.FirstOrDefault(asset => asset.Address.Equals(fungAsset)).Name}");
@@ -143,7 +143,7 @@ Asset GetAssetFromWalletByGuid(CryptoWallet wallet)
         else if (!(wallet as CryptoAndNFTWallet).GetSupportedNonFungibleAssets().Contains(assetAddress) && !(asset.GetType().Name == GeneralConstants.FUNGIBLE_ASSET_TYPE))
         {
             Console.WriteLine("\nAsset not supported!");
-            Console.WriteLine("Supported assets for the wallet type are: ");
+            Console.WriteLine("Supported non fungible assets for the wallet type are: ");
             foreach (var nonFungAsset in (wallet as CryptoAndNFTWallet).GetSupportedNonFungibleAssets())
             {
                 Console.WriteLine($"\t{nonFungAsset} - {GlobalData.nonFungibleAssets.FirstOrDefault(asset => asset.Address.Equals(nonFungAsset)).Name}");
@@ -157,16 +157,7 @@ Asset GetAssetFromWalletByGuid(CryptoWallet wallet)
 
 Transaction GetTransactionByGuid(CryptoWallet currentWallet)
 {
-    var success = false;
-
-    Console.Write("\nInput id of transaction you wish to revoke: ");
-    success = Guid.TryParse(Console.ReadLine(), out Guid transactionId);
-
-    if (!success)
-    {
-        Console.WriteLine("Input value needs to be a Guid!");
-        return null;
-    }
+    var transactionId = GeneralHelper.GetGuidFromUserInput(MessageConstants.TRANSACTION_ID_REQUEST_MESSAGE);
 
     var transaction = allTransactions.FirstOrDefault(trans => trans.Id.Equals(transactionId));
 
@@ -283,23 +274,7 @@ bool HandleFungibleAssetTransaction(CryptoWallet senderWallet, CryptoWallet rece
     if (!GeneralHelper.ConfirmChoice(MessageConstants.TRANSACTION_CONFORMATION_MESSAGE))
         return false;
 
-    //TODO maybe add this logic to the class when adding new transaction
-    var senderStartBalance = senderWallet.GetFungibleValue(sendingCrypto.Address);
-
-    var receiverStartBalance = receiverWallet.GetFungibleValue(sendingCrypto.Address);
-
-    var senderEndBalance = senderWallet.FungibleValueManipulation(sendingCrypto.Address, amount, false);
-
-    var receiverEndBalance = receiverWallet.FungibleValueManipulation(sendingCrypto.Address, amount, true);
-    
-    var transactionInProgress = new FungibleAssetTransaction(senderWallet.Address, receiverWallet.Address, sendingCrypto.Address, senderStartBalance, senderEndBalance, receiverStartBalance, receiverEndBalance);
-    
-    senderWallet.AddTransaction(transactionInProgress.Id);
-    receiverWallet.AddTransaction(transactionInProgress.Id);
-    
-    allTransactions.Add(transactionInProgress);
-    
-    sendingCrypto.ChangeAssetValue();
+    allTransactions.Add(TransactionHelper.FungibleTransaction(senderWallet, receiverWallet, sendingCrypto, amount));
 
     return true;
 }
@@ -338,23 +313,11 @@ bool HandleNonFungibleAssetTransaction(CryptoWallet senderWallet, CryptoWallet r
         return false;
     }
 
-    //TODO migrate
-    var transactionInProgress = new NonFungibleAssetTransaction(senderWallet.Address, receiverWallet.Address, sendingNFT.Address);
-
-    senderWallet.AddTransaction(transactionInProgress.Id);
-    receiverWallet.AddTransaction(transactionInProgress.Id);
-
-    (senderWallet as CryptoAndNFTWallet).SendNonFungibleAsset(sendingNFT.Address);
-    (receiverWallet as CryptoAndNFTWallet).ReceiveNonFungibleAsset(sendingNFT.Address);
-
-    allTransactions.Add(transactionInProgress);
-
-    sendingNFT.ChangeBelongingFungibleValue();
+    allTransactions.Add(TransactionHelper.NonFungibleTransaction(senderWallet as CryptoAndNFTWallet, receiverWallet as CryptoAndNFTWallet, sendingNFT));
 
     return true;
 }
 
-//TODO move to CryptoWallet and CryptoAndNFTWallet
 void Portfolio(CryptoWallet targetWallet)
 {
     Console.WriteLine($"All asset value: $ {CryptoWalletHelper.GetValueFromWalletByType(targetWallet)}");

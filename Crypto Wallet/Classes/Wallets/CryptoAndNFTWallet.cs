@@ -1,6 +1,4 @@
-﻿using System;
-using Crypto_Wallet.Classes.Assets;
-using Crypto_Wallet.Interfaces;
+﻿using Crypto_Wallet.Interfaces;
 using Crypto_Wallet.Global.Data;
 
 namespace Crypto_Wallet.Classes.Wallets
@@ -8,17 +6,13 @@ namespace Crypto_Wallet.Classes.Wallets
 	public abstract class CryptoAndNFTWallet : CryptoWallet, INonFungible
 	{
         #region Properties
-
         public List<Guid> OwnedNonFungibleAssets { get; set; } = new List<Guid>();
 
         public static Dictionary<string, List<Guid>> SupportedNonFungibleAssets { get; set; } = new Dictionary<string, List<Guid>>();
-
         #endregion
 
-        public CryptoAndNFTWallet() : base()
-		{
-            
-        }
+        #region Constructors
+        public CryptoAndNFTWallet() : base() { }
 
 		public CryptoAndNFTWallet(Dictionary<Guid, double> ownedFungibleAssets, List<Guid> ownedNonFungibleAssets, List<Guid>? supportedFungibleAssets, List<Guid>? supportedNonFungableAssets) : base(ownedFungibleAssets, supportedFungibleAssets)
 		{
@@ -27,6 +21,7 @@ namespace Crypto_Wallet.Classes.Wallets
             if (supportedNonFungableAssets != null)
                 SupportedNonFungibleAssets[this.GetWalletType()] = supportedNonFungableAssets;
 		}
+        #endregion
 
         public List<Guid> GetSupportedNonFungibleAssets()
         {

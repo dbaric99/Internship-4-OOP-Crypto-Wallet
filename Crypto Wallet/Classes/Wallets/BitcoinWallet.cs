@@ -1,5 +1,4 @@
-﻿using System;
-namespace Crypto_Wallet.Classes
+﻿namespace Crypto_Wallet.Classes
 {
 	public class BitcoinWallet : CryptoWallet
 	{

@@ -1,5 +1,4 @@
-﻿using System;
-using ConsoleTables;
+﻿using ConsoleTables;
 using Crypto_Wallet.Classes;
 using Crypto_Wallet.Classes.Wallets;
 using Crypto_Wallet.Enums;

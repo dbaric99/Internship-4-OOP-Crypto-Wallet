@@ -1,12 +1,14 @@
-﻿using System;
-namespace Crypto_Wallet.Classes.Assets
+﻿namespace Crypto_Wallet.Classes.Assets
 {
 	public class FungibleAsset : Asset
 	{
-		public string Label { get; set; }
-		public double USDValue { get; private set; }
+        #region Properties
+        public string Label { get; set; }
 
-		public FungibleAsset(string name, string label, double value) : base()
+		public double USDValue { get; private set; }
+        #endregion
+
+        public FungibleAsset(string name, string label, double value) : base()
 		{
 			Name = name;
 			Label = label;

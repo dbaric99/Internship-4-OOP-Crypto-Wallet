@@ -1,5 +1,4 @@
-﻿using System;
-namespace Crypto_Wallet.Enums
+﻿namespace Crypto_Wallet.Enums
 {
 	public enum CryptoWalletTypes
 	{

@@ -1,14 +1,16 @@
-﻿using System;
-using Crypto_Wallet.Global.Data;
+﻿using Crypto_Wallet.Global.Data;
 
 namespace Crypto_Wallet.Classes.Assets
 {
 	public class NonFungibleAsset : Asset
 	{
-		public double Value { get; set; }
-		public Guid FungibleAsset { get; }
+        #region Properties
+        public double Value { get; set; }
 
-		public NonFungibleAsset(string name, double value, Guid fungibleAsset) : base()
+		public Guid FungibleAsset { get; }
+        #endregion
+
+        public NonFungibleAsset(string name, double value, Guid fungibleAsset) : base()
 		{
 			Name = name;
 			Value = value;

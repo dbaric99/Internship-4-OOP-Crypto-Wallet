@@ -1,6 +1,4 @@
-﻿using System;
-using System.Text.RegularExpressions;
-using Crypto_Wallet.Classes.Assets;
+﻿using Crypto_Wallet.Classes.Assets;
 using Crypto_Wallet.Interfaces;
 using Crypto_Wallet.Global.Data;
 using Crypto_Wallet.Global.Constants;
@@ -22,9 +20,10 @@ namespace Crypto_Wallet.Classes
 
 		public List<double> Values { get; private set; } = new List<double>();
 
-		#endregion
+        #endregion
 
-		public CryptoWallet(Dictionary<Guid, double> ownedFungibleAssets, List<Guid>? supportedFungibleAssets)
+        #region Constructors
+        public CryptoWallet(Dictionary<Guid, double> ownedFungibleAssets, List<Guid>? supportedFungibleAssets)
 		{
             Address = Guid.NewGuid();
             OwnedFungibleAssets = ownedFungibleAssets;
@@ -42,8 +41,9 @@ namespace Crypto_Wallet.Classes
 			foreach (var sfa in SupportedFungibleAssets[this.GetWalletType()])
 				OwnedFungibleAssets[sfa] = 0;
 		}
+        #endregion
 
-		public List<Guid> GetSupportedFungibleAssets()
+        public List<Guid> GetSupportedFungibleAssets()
 		{
 			return SupportedFungibleAssets[this.GetWalletType()];
 

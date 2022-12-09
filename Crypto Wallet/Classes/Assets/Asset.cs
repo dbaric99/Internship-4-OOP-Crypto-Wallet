@@ -1,15 +1,16 @@
-﻿using System;
-namespace Crypto_Wallet.Classes
+﻿namespace Crypto_Wallet.Classes
 {
 	public abstract class Asset
 	{
-		public Guid Address { get; }
+        #region Properties
+        public Guid Address { get; }
 
 		public string Name { get; set; }
 
 		public List<double> PastValues { get; private set; } = new List<double>();
+        #endregion
 
-		public Asset()
+        public Asset()
 		{
 			Address = Guid.NewGuid();
 		}
