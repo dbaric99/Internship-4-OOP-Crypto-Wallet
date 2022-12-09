@@ -10,10 +10,6 @@ using Crypto_Wallet.Classes.Transactions;
 using Crypto_Wallet.Helpers;
 using System.Reflection;
 
-//TODO wallet value change
-//TODO asset name for nunfungible should be the NFT name
-//TODO fungible support for solana and eth
-
 //list of all transactions
 var allTransactions = new List<Transaction>();
 
@@ -215,7 +211,7 @@ void TransactionHistory(CryptoWallet targetWallet)
                 trans.Sender,
                 trans.Receiver,
                 "-",
-                trans.GetFungibleAssetName(),
+                (trans as NonFungibleAssetTransaction).GetNonFungibleAssetName(),
                 trans.isRevoked
             );
         }
@@ -295,14 +291,14 @@ bool HandleFungibleAssetTransaction(CryptoWallet senderWallet, CryptoWallet rece
     var senderEndBalance = senderWallet.FungibleValueManipulation(sendingCrypto.Address, amount, false);
 
     var receiverEndBalance = receiverWallet.FungibleValueManipulation(sendingCrypto.Address, amount, true);
-
+    
     var transactionInProgress = new FungibleAssetTransaction(senderWallet.Address, receiverWallet.Address, sendingCrypto.Address, senderStartBalance, senderEndBalance, receiverStartBalance, receiverEndBalance);
-
+    
     senderWallet.AddTransaction(transactionInProgress.Id);
     receiverWallet.AddTransaction(transactionInProgress.Id);
-
+    
     allTransactions.Add(transactionInProgress);
-
+    
     sendingCrypto.ChangeAssetValue();
 
     return true;
@@ -319,16 +315,6 @@ bool HandleNonFungibleAssetTransaction(CryptoWallet senderWallet, CryptoWallet r
     var supportsAsset = receiverWallet.GetWalletType() == "SolanaWallet"
         ? (receiverWallet as SolanaWallet).GetSupportedNonFungibleAssets().Contains(sendingNFT.Address)
         : (receiverWallet as EthereumWallet).GetSupportedNonFungibleAssets().Contains(sendingNFT.Address);
-
-    foreach (var item in (receiverWallet as SolanaWallet).GetSupportedNonFungibleAssets())
-    {
-        Console.WriteLine("EXPLICIT: " + item);
-    }
-
-    foreach (var item in (receiverWallet as CryptoAndNFTWallet).GetSupportedNonFungibleAssets())
-    {
-        Console.WriteLine("NON EXPLICIT: " + item);
-    }
 
     if (!supportsAsset)
     {
@@ -384,7 +370,7 @@ void Portfolio(CryptoWallet targetWallet)
         var values = targetWallet.CalculateFungibleAssetsValue(fungAssetObj);
 
         var valueInUSD = double.Parse(values.usdValue.Replace("$", "").Trim());
-
+        
         fungAssetObj.AddPastValue(valueInUSD);
 
         fungibleAssetsTable.AddRow(
@@ -412,7 +398,7 @@ void Portfolio(CryptoWallet targetWallet)
         var belongingFungAsset = GlobalData.fungibleAssets.First(asset => asset.Address.Equals(nonFungAssetObj.FungibleAsset));
 
         var valueInUSD = nonFungAssetObj.Value * belongingFungAsset.USDValue;
-
+        
         nonFungAssetObj.AddPastValue(valueInUSD);
 
         nonFungibleAssetsTable.AddRow(

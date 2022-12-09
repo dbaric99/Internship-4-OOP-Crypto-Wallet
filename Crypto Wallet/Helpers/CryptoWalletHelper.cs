@@ -39,15 +39,15 @@ namespace Crypto_Wallet.Helpers
             foreach (var wallet in GlobalData.wallets)
             {
                 var value = GetValueFromWalletByType(wallet);
+                
+                wallet.AddValue(value);
 
                 table.AddRow(
                     wallet.GetWalletType(),
                     wallet.Address,
                     $"$ {value}",
-                    wallet.GetValueChange(value)
+                    wallet.GetValueChange()
                 );
-
-                wallet.AddValue(value);
             }
 
             table.Write(Format.Alternative);

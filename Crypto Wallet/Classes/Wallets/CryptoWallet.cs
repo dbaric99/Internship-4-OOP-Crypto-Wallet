@@ -16,8 +16,6 @@ namespace Crypto_Wallet.Classes
 
 		public Dictionary<Guid, double> OwnedFungibleAssets { get; private set; } = new Dictionary<Guid, double>();
 
-		//public static List<Guid> SupportedFungibleAssets { get; set; } = new List<Guid>();
-
 		public static Dictionary<string, List<Guid>> SupportedFungibleAssets { get; set; } = new Dictionary<string, List<Guid>>();
 
 		public List<Guid> Transactions { get; private set; } = new List<Guid>();
@@ -68,19 +66,22 @@ namespace Crypto_Wallet.Classes
 
 			return value;
 		}
-		//TODO refactor #1
+		
 		public void AddValue(double newValue)
 		{
-			if (Values.Any() && Values.Last() == newValue) return;
 			Values.Add(newValue);
 		}
 
-		public string GetValueChange(double newValue)
+		public string GetValueChange()
 		{
-			if (!this.Values.Any() || this.Values.Last() == newValue)
+			if (this.Values.Count < 2 || this.Values.Last() == this.Values[this.Values.Count - 2])
 				return "0%";
 
-			return $"{Math.Round(((newValue - this.Values.Last()) / this.Values.Last()) * 100, 2)}%";
+			var change = this.Values.Last() - this.Values[this.Values.Count - 2];
+			
+			var changeValue = change / this.Values[this.Values.Count - 2];
+
+			return $"{Math.Round(changeValue * 100, 2)} %";
 		}
 
 		public (string cryptoValue, string usdValue) CalculateFungibleAssetsValue(FungibleAsset targetFungAsset)
@@ -106,8 +107,6 @@ namespace Crypto_Wallet.Classes
 			OwnedFungibleAssets[fungibleAssetAddress] = isReceiving
 				? OwnedFungibleAssets[fungibleAssetAddress] + amount
 				: OwnedFungibleAssets[fungibleAssetAddress] - amount;
-
-			AddValue(OwnedFungibleAssets[fungibleAssetAddress]);
 
 			return OwnedFungibleAssets[fungibleAssetAddress];
 		}

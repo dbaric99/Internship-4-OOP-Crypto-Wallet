@@ -16,6 +16,11 @@ namespace Crypto_Wallet.Classes.Transactions
 		{
 			return GlobalData.nonFungibleAssets.FirstOrDefault(asset => asset.Address.Equals(this.NonFungibleAsset)).GetFungibleAssetName();
 		}
+
+		public string GetNonFungibleAssetName()
+		{
+			return GlobalData.nonFungibleAssets.FirstOrDefault(asset => asset.Address.Equals(this.NonFungibleAsset)).Name;
+		}
 	}
 }
 

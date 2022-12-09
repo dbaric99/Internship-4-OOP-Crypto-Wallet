@@ -24,7 +24,6 @@ namespace Crypto_Wallet.Classes.Assets
 			var newValue = USDValue + (USDValue * (percentage / 100));
 
 			this.USDValue = newValue;
-			this.AddPastValue(newValue);
 		}
 	}
 }
