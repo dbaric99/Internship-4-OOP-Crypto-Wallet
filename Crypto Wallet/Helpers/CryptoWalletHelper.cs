@@ -45,7 +45,7 @@ namespace Crypto_Wallet.Helpers
                     wallet.GetWalletType(),
                     wallet.Address,
                     $"$ {value}",
-                    wallet.GetValueChange()
+                    GetValueChange(wallet.Values)
                 );
             }
 
@@ -59,7 +59,7 @@ namespace Crypto_Wallet.Helpers
                     : ((CryptoAndNFTWallet)wallet).CalculateValueInUSD();
         }
 
-        public static CryptoWallet GetWalletByAddress(string queryMessage, string rejectionMessage)
+        public static CryptoWallet? GetWalletByAddress(string queryMessage, string rejectionMessage)
         {
             var targetWalletAddress = GeneralHelper.GetGuidFromUserInput(queryMessage);
 
@@ -69,6 +69,19 @@ namespace Crypto_Wallet.Helpers
                 Console.WriteLine(rejectionMessage);
 
             return wallet;
+        }
+
+        public static string GetValueChange(List<double> pastValues)
+        {
+            if (pastValues.Count < 2 || pastValues.Last() == pastValues[^2] )
+                return "0%";
+            
+            var lastVal = pastValues.Last();
+            var secondToLastVal = pastValues[^2];
+
+            var change = (lastVal - secondToLastVal) / secondToLastVal;
+
+            return $"{Math.Round((double)change * 100, 2)}%";
         }
     }
 }

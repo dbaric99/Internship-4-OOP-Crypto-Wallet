@@ -1,4 +1,4 @@
-﻿namespace Crypto_Wallet.Classes
+﻿namespace Crypto_Wallet.Classes.Assets
 {
 	public abstract class Asset
 	{
@@ -19,18 +19,6 @@
 		{
 			this.PastValues.Add(newValue);
 		}
-
-		public string CalculateValueChange()
-		{
-            if (this.PastValues.Count < 2 || this.PastValues.Last() == this.PastValues[this.PastValues.Count - 2])
-                return "0%";
-
-            var change = this.PastValues.Last() - this.PastValues[this.PastValues.Count - 2];
-
-            var changeValue = change / this.PastValues[this.PastValues.Count - 2];
-
-            return $"{Math.Round(changeValue * 100, 2)} %";
-        }
-    }
+	}
 }
 

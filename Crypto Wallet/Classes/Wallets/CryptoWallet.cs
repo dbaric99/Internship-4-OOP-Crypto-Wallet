@@ -72,18 +72,6 @@ namespace Crypto_Wallet.Classes
 			Values.Add(newValue);
 		}
 
-		public string GetValueChange()
-		{
-			if (this.Values.Count < 2 || this.Values.Last() == this.Values[this.Values.Count - 2])
-				return "0%";
-
-			var change = this.Values.Last() - this.Values[this.Values.Count - 2];
-			
-			var changeValue = change / this.Values[this.Values.Count - 2];
-
-			return $"{Math.Round(changeValue * 100, 2)} %";
-		}
-
 		public (string cryptoValue, string usdValue) CalculateFungibleAssetsValue(FungibleAsset targetFungAsset)
 		{
 			var amount = OwnedFungibleAssets[targetFungAsset.Address];

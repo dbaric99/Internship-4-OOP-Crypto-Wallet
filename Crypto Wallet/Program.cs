@@ -2,9 +2,7 @@
 using Crypto_Wallet.Classes;
 using Crypto_Wallet.Classes.Wallets;
 using Crypto_Wallet.Classes.Assets;
-using Crypto_Wallet.Enums;
 using ConsoleTables;
-using Crypto_Wallet.Interfaces;
 using Crypto_Wallet.Global.Constants;
 using Crypto_Wallet.Global.Data;
 using Crypto_Wallet.Classes.Transactions;
@@ -15,11 +13,9 @@ using Crypto_Wallet.Helpers;
 var allTransactions = new List<Transaction>();
 
 //------ MAIN MENU ------
-var mainMenuChoice = 0;
 
-do
-{
-    mainMenuChoice = GeneralHelper.GetMenuChoiceFromUser(MenuConstants.MAIN_MENU_TEXT, "Main Menu");
+while(true) {
+    var mainMenuChoice = GeneralHelper.GetMenuChoiceFromUser(MenuConstants.MAIN_MENU_TEXT, "Main Menu");
 
     switch (mainMenuChoice)
     {
@@ -41,18 +37,14 @@ do
             Console.WriteLine("\nThere is no action for provided input!");
             break;
     }
-
-} while (mainMenuChoice != 0);
+}
 
 //------ WALLET ACCESS SUBMENU ------
 
 void WalletAccessSubmenu(CryptoWallet targetWallet)
 {
-    var walletAccessSubmenu = 0;
-
-    do
-    {
-        walletAccessSubmenu = GeneralHelper.GetMenuChoiceFromUser(MenuConstants.ACCESS_WALLET_MENU_TEXT, "Access Wallet");
+    while(true) {
+        var walletAccessSubmenu = GeneralHelper.GetMenuChoiceFromUser(MenuConstants.ACCESS_WALLET_MENU_TEXT, "Access Wallet");
 
         switch (walletAccessSubmenu)
         {
@@ -75,7 +67,7 @@ void WalletAccessSubmenu(CryptoWallet targetWallet)
                 break;
         }
 
-    } while (walletAccessSubmenu != 0);
+    }
 }
 
 bool Transfer(CryptoWallet senderWallet)
@@ -108,9 +100,8 @@ Asset GetAssetFromWalletByGuid(CryptoWallet wallet)
 {
     var assetAddress = GeneralHelper.GetGuidFromUserInput(MessageConstants.ASSET_TO_TRANSFER_REQUEST_MESSAGE);
 
-    var asset = (Asset)(GlobalData.fungibleAssets.FirstOrDefault(asset => asset.Address.Equals(assetAddress)) != null
-        ? GlobalData.fungibleAssets.FirstOrDefault(asset => asset.Address.Equals(assetAddress))
-        : GlobalData.nonFungibleAssets.FirstOrDefault(asset => asset.Address.Equals(assetAddress)));
+    var asset = (Asset?)GlobalData.fungibleAssets.FirstOrDefault(asset => asset.Address.Equals(assetAddress)) ??
+                GlobalData.nonFungibleAssets.FirstOrDefault(asset => asset.Address.Equals(assetAddress));
 
     if(asset == null)
         Console.WriteLine("There is no asset with that address!");
@@ -219,7 +210,7 @@ void RevokeTransaction(CryptoWallet senderWallet)
 
     if (transaction == null) return;
 
-    if(transaction.isRevoked == true)
+    if(transaction.isRevoked)
     {
         Console.WriteLine("\nThis transaction is already revoked!");
         return;
@@ -235,11 +226,12 @@ void RevokeTransaction(CryptoWallet senderWallet)
 
     if (!transaction.IsNonFungible())
     {
-        senderWallet.FungibleValueManipulation((transaction as FungibleAssetTransaction).FungibleAsset, (transaction as FungibleAssetTransaction).ReceiverEndBalance - (transaction as FungibleAssetTransaction).ReceiverStartBalance, true);
+        var fungAssetTransaction = (FungibleAssetTransaction)transaction;
+        senderWallet.FungibleValueManipulation(fungAssetTransaction.FungibleAsset, fungAssetTransaction.ReceiverEndBalance - fungAssetTransaction.ReceiverStartBalance, true);
 
         var receivingWallet = GlobalData.wallets.First(wallet => wallet.Address.Equals(transaction.Receiver));
 
-        receivingWallet.FungibleValueManipulation((transaction as FungibleAssetTransaction).FungibleAsset, (transaction as FungibleAssetTransaction).ReceiverEndBalance - (transaction as FungibleAssetTransaction).ReceiverStartBalance, false);
+        receivingWallet.FungibleValueManipulation(fungAssetTransaction.FungibleAsset, fungAssetTransaction.ReceiverEndBalance - fungAssetTransaction.ReceiverStartBalance, false);
 
         return;
     }
@@ -342,7 +334,7 @@ void Portfolio(CryptoWallet targetWallet)
             fungAssetObj.Label,
             values.cryptoValue,
             values.usdValue,
-            fungAssetObj.CalculateValueChange()
+            CryptoWalletHelper.GetValueChange(fungAssetObj.PastValues)
         );
     }
 
@@ -369,11 +361,9 @@ void Portfolio(CryptoWallet targetWallet)
             nonFungAssetObj.Name,
             $"{nonFungAssetObj.Value} {belongingFungAsset.Label}",
             $"$ {nonFungAssetObj.GetValueInUSD()}",
-            nonFungAssetObj.CalculateValueChange()
+            CryptoWalletHelper.GetValueChange(nonFungAssetObj.PastValues)
         );
     }
 
     nonFungibleAssetsTable.Write(Format.Alternative);
 }
-
-Console.ReadKey();
